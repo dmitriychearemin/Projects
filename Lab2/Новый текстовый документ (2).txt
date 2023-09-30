@@ -1,0 +1,71 @@
+if (Razm != 0) {
+		int Num_J = 0, i = 0, j = Num_J;
+		int Count_Cycles1 = 0, Count_Cycles2 = 0;										// Количество циклов while
+
+		int Summ_Diagonal_Left = 0, Compositional_Left = 1;							// Сумма диагоналей слева направо
+		int Summ_Diagonal_Right = 0, Compositional_Right = 1;						// Сумма диагоналей справа налево
+
+		while (Count_Cycles1 < Razm) {													// Цикл перебора диагоналей Слева направо
+			while (Count_Cycles2 < Razm) {											// Цикл перебора элементов диагонали
+				Compositional_Left = Acess_To_Elements(i, j) * Compositional_Left;
+				i++;
+				if (j == Razm-1) {
+					j = 0;	
+				}
+				else {
+					j++;
+				}
+				Count_Cycles2++;
+				if (Count_Cycles2 >= Razm) {
+					Num_J++;
+					i = 0;
+					j = Num_J;
+				}
+			}
+			Count_Cycles2 = 0;
+			Count_Cycles1++;
+			Summ_Diagonal_Left = Summ_Diagonal_Left + Compositional_Left;
+			Compositional_Left = 1;
+		}
+		std::cout << Summ_Diagonal_Left << std::endl;
+		Count_Cycles1 = 0, Count_Cycles2 = 0;
+		i = 0, Num_J = Razm - 2, j = Num_J;
+
+		while (Count_Cycles1 < Razm) {												// Цикл перебора диагоналей Справа налево
+			while (Count_Cycles2 < Razm) {											// Цикл перебора элементов диагонали
+				Compositional_Right = Acess_To_Elements(i, j) * Compositional_Right;
+				i++;
+				if (j == 0) {
+					j = Razm - 1;
+				}
+				else {
+					j--;
+				}
+				Count_Cycles2++;
+				if (Count_Cycles2 == Razm) {
+					if (Num_J == 0) {
+						Num_J = Razm - 1;
+						i = 0;
+						j = Num_J;
+					}
+					else {
+						Num_J--;
+						i = 0;
+						j = Num_J;
+					}
+				}
+			}
+			Count_Cycles2 = 0;
+			Count_Cycles1++;
+			Summ_Diagonal_Right = Summ_Diagonal_Right + Compositional_Right;
+			Compositional_Right = 1;
+		}
+		std::cout << Summ_Diagonal_Right << std::endl;
+		determinant = Summ_Diagonal_Left - Summ_Diagonal_Right;
+		std::cout << "Determinant Matrix:" << determinant << std::endl;
+		std::cout << std::endl;
+	}
+	else {
+		std::cout << "Matrix not create" << determinant << std::endl;
+		std::cout << std::endl;
+	}

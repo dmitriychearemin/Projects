@@ -1,0 +1,10 @@
+﻿  Spisok_Realiz.cpp
+  main.cpp
+C:\Users\ivanr\OneDrive\Рабочий стол\Учебники и задачники в унике\2курс\АСД\Лабораторные\Lab1\main.cpp(9,12): warning C4244: аргумент: преобразование "time_t" в "unsigned int", возможна потеря данных
+  Создание кода...
+C:\Users\ivanr\OneDrive\Рабочий стол\Учебники и задачники в унике\2курс\АСД\Лабораторные\Lab1\Spisok_Realiz.cpp(117): warning C4715: List::Check_For_Number: значение возвращается не при всех путях выполнения
+C:\Users\ivanr\OneDrive\Рабочий стол\Учебники и задачники в унике\2курс\АСД\Лабораторные\Lab1\Spisok_Realiz.cpp(152): warning C4715: List::Read_Spisok_In_File: значение возвращается не при всех путях выполнения
+C:\Users\ivanr\OneDrive\Рабочий стол\Учебники и задачники в унике\2курс\АСД\Лабораторные\Lab1\Spisok_Realiz.cpp(217): warning C4715: List::Check_File_For_Symbols: значение возвращается не при всех путях выполнения
+C:\Users\ivanr\OneDrive\Рабочий стол\Учебники и задачники в унике\2курс\АСД\Лабораторные\Lab1\Spisok_Realiz.cpp(195): warning C4715: List::Enter_Spisok_Hand: значение возвращается не при всех путях выполнения
+C:\Users\ivanr\OneDrive\Рабочий стол\Учебники и задачники в унике\2курс\АСД\Лабораторные\Lab1\Spisok_Realiz.cpp(33): warning C4715: List::Create_Spisok_Random: значение возвращается не при всех путях выполнения
+  Lab1.vcxproj -> C:\Users\ivanr\OneDrive\Рабочий стол\Учебники и задачники в унике\2курс\АСД\Лабораторные\Lab1\x64\Debug\Lab1.exe

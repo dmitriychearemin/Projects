@@ -1,0 +1,7 @@
+﻿  Matrix_CRS_Realization.cpp
+  main.cpp
+  Создание кода...
+C:\Users\ivanr\OneDrive\Рабочий стол\Учебники и задачники в унике\2курс\АСД\Лабораторные\Lab2\Matrix_CRS_Realization.cpp(151): warning C4715: Matrix_CRS::Check_For_Number: значение возвращается не при всех путях выполнения
+C:\Users\ivanr\OneDrive\Рабочий стол\Учебники и задачники в унике\2курс\АСД\Лабораторные\Lab2\Matrix_CRS_Realization.cpp(134): warning C4715: Matrix_CRS::Check_File_For_Symbols: значение возвращается не при всех путях выполнения
+C:\Users\ivanr\OneDrive\Рабочий стол\Учебники и задачники в унике\2курс\АСД\Лабораторные\Lab2\Matrix_CRS_Realization.cpp(190): warning C4715: Matrix_CRS::Calculate_Determinant1: значение возвращается не при всех путях выполнения
+  Lab2.vcxproj -> C:\Users\ivanr\OneDrive\Рабочий стол\Учебники и задачники в унике\2курс\АСД\Лабораторные\Lab2\x64\Debug\Lab2.exe
