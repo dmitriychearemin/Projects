@@ -87,13 +87,8 @@ void Game::Create_Field() {
 	
 }
 
-<<<<<<< HEAD
 //-----------------------------------------------------------------------------
 // Отрисовка объектов
-=======
-void Game::Update_Display() {
-	
->>>>>>> 405dfe728d0b92e008b66133f3311a90376fd233
 
 void Game::Count_Positions_For_Tockens() {
 	Count_position = 0;
@@ -104,7 +99,6 @@ void Game::Count_Positions_For_Tockens() {
 	}
 }
 
-<<<<<<< HEAD
 //------------------------------------------------------------------------------
 // Графический вывод изображение по массиву поля
 
@@ -162,26 +156,3 @@ void Game::Create_Tockens() {
 		Tocken[i].setOrigin(40,40);
 	}
 }
-=======
-}
-
-void Game::Building_On_Array(){
-   for(int i=0;i<8;i++){
-      for(int j=0;j<8;j++){
-         if(Game_Field[i][j]==1){
-                  Tocken[ConvertIJ_to_I(i,j)].setColor(White);
-         }
-      }
-   }
-}
-
-int CovertIJ_to_I(int i, int j){
-   if(i!=0){
-      I= i*8+j;
-   }
-   else{
-      I=j;
-   }
-   return I;
-}
->>>>>>> 405dfe728d0b92e008b66133f3311a90376fd233
