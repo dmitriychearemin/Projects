@@ -58,8 +58,10 @@ void Game::Create_Field() {
 
 }
 
-void Update_Display() {
+void Game::Update_Display() {
 	
 
 
 }
+
+void Game:: Create_
