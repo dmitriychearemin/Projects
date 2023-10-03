@@ -15,6 +15,7 @@ public:
 	void Create_Field();
 	void Count_Positions_For_Tockens();
 	void Create_Tockens();
-	void Building_On_Array();
+	void Building_Objects_On_Array();
 	int CovertIJ_to_I(int, int);
+	void Add_Tocken(int x, int y);
 };

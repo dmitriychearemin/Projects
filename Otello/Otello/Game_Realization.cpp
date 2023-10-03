@@ -8,7 +8,7 @@ void Game::Game_Cycle() {
 	sf::Time elapsed = clock.restart();
 	Create_Tockens();
 	Create_Field();
-	Building_On_Array();
+	Building_Objects_On_Array();
 	sf::Vector2i localPosition = sf::Mouse::getPosition(window); //позиция мыши
 
 	sf::RectangleShape BackGr(sf::Vector2f(800, 800));
@@ -29,9 +29,10 @@ void Game::Game_Cycle() {
 
 			if (event.type == sf::Event::MouseButtonPressed) {
 				if (event.key.code == sf::Mouse::Left) {
-
+					Add_Tocken(sf::Mouse::getPosition().x, sf::Mouse::getPosition().y);
 				}	
 			}
+
 				
 		}
 		if (elapsed.asMicroseconds() > 300) {
@@ -84,7 +85,8 @@ void Game::Create_Field() {
 			}
 		}
 	}
-	
+	Game_Field[7][7] = 3;
+	Game_Field[5][7] = 3;
 }
 
 //-----------------------------------------------------------------------------
@@ -102,7 +104,7 @@ void Game::Count_Positions_For_Tockens() {
 //------------------------------------------------------------------------------
 // Графический вывод изображение по массиву поля
 
-void Game::Building_On_Array() {
+void Game::Building_Objects_On_Array() {
 	int Count = 0;
 	Count_Positions_For_Tockens();
 	Positions = new sf::RectangleShape[Count_position];
@@ -155,4 +157,26 @@ void Game::Create_Tockens() {
 		Tocken[i].setRadius(40);
 		Tocken[i].setOrigin(40,40);
 	}
+}
+
+
+void Game::Add_Tocken(int x, int y) {
+	int I=0, J=0;
+	x = x - 468;
+	y = y - 76;
+	std::cout << x << " " << y << std::endl;
+	std::cout << Positions[0].getPosition().x << " " << Positions[0].getPosition().y << std::endl;
+	std::cout << Positions[1].getPosition().x << " " << Positions[1].getPosition().y << std::endl;
+
+
+	for (int i = 0; i < Count_position; i++) {
+		if ((Positions[i].getPosition().x - 49) < x && (Positions[i].getPosition().x + 49) > x && (Positions[i].getPosition().y - 49) < y && (Positions[i].getPosition().y + 49) > y) {
+			
+			I = (Positions[i].getPosition().x - Koef) / (Koef - 50);
+			J = (Positions[i].getPosition().y - Koef) / (Koef - 50);
+			Game_Field[I][J] = 1;
+			break;
+		}
+	}
+	Building_Objects_On_Array();
 }
