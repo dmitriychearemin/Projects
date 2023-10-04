@@ -18,4 +18,6 @@ public:
 	void Building_Objects_On_Array();
 	int CovertIJ_to_I(int, int);
 	void Add_Tocken(int x, int y);
+	void Computer_Action(); 
+	void Adding_Place_To_Tockens();
 };
