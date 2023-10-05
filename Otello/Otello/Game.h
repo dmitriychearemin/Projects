@@ -9,6 +9,7 @@ private:
 	sf::CircleShape* Tocken = new sf::CircleShape[64];			// Фишки
 	sf::RectangleShape* Positions;
 	int Koef = 150, Count_position=0;
+	int Opredelitel_Player = 1, Opredelitel_Bot = 2;
 
 public:
 	void Game_Cycle();
@@ -19,5 +20,7 @@ public:
 	int CovertIJ_to_I(int, int);
 	void Add_Tocken(int x, int y);
 	void Computer_Action(); 
-	void Adding_Place_To_Tockens();
+	bool Check_Massive_Elemetnt(int i, int j);
+	void Iterate_Elements_Massive_For_Line(int i, int j, int I, int J, int opredelitel);
+	void Adding_Place_To_Tockens(int Opredelitel);               // определитель =1 то все варанты для фишки человека, если = 2 то для бота
 };

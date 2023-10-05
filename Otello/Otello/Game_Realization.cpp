@@ -12,6 +12,7 @@ void Game::Game_Cycle() {
 	Create_Tockens();
 	Create_Field();
 	Building_Objects_On_Array();
+	Adding_Place_To_Tockens(Opredelitel_Player);
 	sf::Vector2i localPosition = sf::Mouse::getPosition(window); //позиция мыши
 
 	sf::RectangleShape BackGr(sf::Vector2f(800, 800));
@@ -91,8 +92,6 @@ void Game::Create_Field() {
 			}
 		}
 	}
-	Game_Field[7][7] = 3;
-	Game_Field[5][7] = 3;
 }
 
 //------------------------------------------------------------------------------------
@@ -192,8 +191,82 @@ void Game::Add_Tocken(int x, int y) {
 //------------------------------------------------------------------------------------
 // Определение позиций куда можно поставить фишку
 
-void Game::Count_Positions_For_Tockens() {
+void Game::Adding_Place_To_Tockens(int opredelitel) {
+	
+	for (int i = 0; i < 8; i++){
+		for (int j= 0; j < 8; j++){
+			if (Game_Field[i][j] == 3 || Game_Field[i][j] == 4) {
+				Game_Field[i][j] = 0;
+			}
+		}
+	}
 
+	if (opredelitel==1) {
+		for (int i = 0; i < 8; i++) {
+			for (int j = 0; j < 8; j++) {
+				if (Game_Field[i][j] == 1) {
+					if (Check_Massive_Elemetnt(i - 1, j - 1) == true && Game_Field[i-1][j-1] == 2) {
+						Iterate_Elements_Massive_For_Line(i - 1, j - 1, i, j, opredelitel);
+					}
+					if (Check_Massive_Elemetnt(i, j - 1) == true && Game_Field[i][j - 1] == 2) {
+						Iterate_Elements_Massive_For_Line(i , j - 1, i, j, opredelitel);
+					}
+					if (Check_Massive_Elemetnt(i + 1, j - 1) == true && Game_Field[i - 1][j - 1] == 2) {
+						Iterate_Elements_Massive_For_Line(i + 1, j - 1, i, j, opredelitel);
+					}
+					if (Check_Massive_Elemetnt(i - 1, j) == true && Game_Field[i - 1][j - 1] == 2) {
+						Iterate_Elements_Massive_For_Line(i - 1, j - 1, i, j, opredelitel);
+					}
+					if (Check_Massive_Elemetnt(i + 1, j ) == true && Game_Field[i - 1][j - 1] == 2) {
+						Iterate_Elements_Massive_For_Line(i + 1, j, i, j, opredelitel);
+					}
+					if (Check_Massive_Elemetnt(i - 1, j + 1) == true && Game_Field[i - 1][j - 1] == 2) {
+						Iterate_Elements_Massive_For_Line(i - 1, j + 1, i, j, opredelitel);
+					}
+					if (Check_Massive_Elemetnt(i , j + 1) == true && Game_Field[i - 1][j - 1] == 2) {
+						Iterate_Elements_Massive_For_Line(i , j + 1, i, j, opredelitel);
+					}
+					if (Check_Massive_Elemetnt(i + 1, j + 1) == true && Game_Field[i - 1][j - 1] == 2) {
+						Iterate_Elements_Massive_For_Line(i + 1, j + 1, i, j, opredelitel);
+					}
+				}
+			}
+		}
+	}
+
+	if (opredelitel == 2) {
+		for (int i = 0; i < 8; i++) {
+			for (int j = 0; j < 8; j++) {
+				if (Game_Field[i][j] == 2) {
+					if (Check_Massive_Elemetnt(i - 1, j - 1) == true && Game_Field[i - 1][j - 1] == 1) {
+						Iterate_Elements_Massive_For_Line(i - 1, j - 1, i, j, opredelitel);
+					}
+					if (Check_Massive_Elemetnt(i, j - 1) == true && Game_Field[i][j - 1] == 1) {
+						Iterate_Elements_Massive_For_Line(i, j - 1, i, j, opredelitel);
+					}
+					if (Check_Massive_Elemetnt(i + 1, j - 1) == true && Game_Field[i - 1][j - 1] == 1) {
+						Iterate_Elements_Massive_For_Line(i + 1, j - 1, i, j, opredelitel);
+					}
+					if (Check_Massive_Elemetnt(i - 1, j) == true && Game_Field[i - 1][j - 1] == 1) {
+						Iterate_Elements_Massive_For_Line(i - 1, j - 1, i, j, opredelitel);
+					}
+					if (Check_Massive_Elemetnt(i + 1, j) == true && Game_Field[i - 1][j - 1] == 1) {
+						Iterate_Elements_Massive_For_Line(i + 1, j, i, j, opredelitel);
+					}
+					if (Check_Massive_Elemetnt(i - 1, j + 1) == true && Game_Field[i - 1][j - 1] == 1) {
+						Iterate_Elements_Massive_For_Line(i - 1, j + 1, i, j, opredelitel);
+					}
+					if (Check_Massive_Elemetnt(i, j + 1) == true && Game_Field[i - 1][j - 1] == 1) {
+						Iterate_Elements_Massive_For_Line(i, j + 1, i, j, opredelitel);
+					}
+					if (Check_Massive_Elemetnt(i + 1, j + 1) == true && Game_Field[i - 1][j - 1] == 1) {
+						Iterate_Elements_Massive_For_Line(i + 1, j + 1, i, j, opredelitel);
+					}
+				}
+			}
+		}
+	}
+	
 
 }
 
@@ -203,4 +276,41 @@ void Game::Count_Positions_For_Tockens() {
 void Game::Computer_Action() {
 
 
+}
+
+//------------------------------------------------------------------------------------
+// Проверка элемента массива на существование
+
+bool Game::Check_Massive_Elemetnt(int i, int j) {
+	if (i < 0 || i > 7 || j < 0 || j > 7) {
+		return false;
+	}
+	return true;
+}
+
+//------------------------------------------------------------------------------------
+// Перебор элементов по определённой линии
+
+void Game::Iterate_Elements_Massive_For_Line(int i, int j, int I, int J, int opredelitel) {
+	
+	int KI = i - I, KJ = j - J;
+	while (i + KI > 0 || i + KI < 7 || j + KJ > 0 || j + KJ < 7) {
+		if (opredelitel == 1) {
+			if (Game_Field[i + KI][j + KJ] == 0) {
+				Game_Field[i + KI][j + KJ] = 3;
+				break;
+			}
+		}
+		if (opredelitel == 2) {
+			if (Game_Field[i + KI][j + KJ] == 0) {
+				Game_Field[i + KI][j + KJ] = 4;
+				break;
+			}
+		}
+		if (Game_Field[i + KI][j + KJ] == opredelitel) {
+			break;
+		}
+		i = i + KI;
+		j = j + KJ;
+	}
 }
