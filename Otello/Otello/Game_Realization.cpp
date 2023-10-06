@@ -34,9 +34,9 @@ void Game::Game_Cycle() {
 			if (event.type == sf::Event::MouseButtonPressed) {
 				if (event.key.code == sf::Mouse::Left) {
 					Add_Tocken(sf::Mouse::getPosition().x, sf::Mouse::getPosition().y);
+					
 				}	
 			}
-
 				
 		}
 		if (elapsed.asMicroseconds() > 300) {
@@ -186,6 +186,8 @@ void Game::Add_Tocken(int x, int y) {
 			break;
 		}
 	}
+	Takeover_Tockens(Opredelitel_Player, I, J);
+	Adding_Place_To_Tockens(Opredelitel_Bot);
 	Building_Objects_On_Array();
 }
 
@@ -312,4 +314,122 @@ void Game::Iterate_Elements_Massive_For_Line(int i, int j, int I, int J, int opr
 		i = i + KI;
 		j = j + KJ;
 	}
+}
+
+//------------------------------------------------------------------------------------
+// ѕереворот фишек в зависимости от хода
+
+void Game::Takeover_Tockens(int opredelitel, int i, int j) {
+
+	if (opredelitel == 1) {
+			if (Check_Massive_Elemetnt(i - 1, j - 1) == true && Game_Field[i - 1][j - 1] == 2  && Check_End_Of_Line(opredelitel, i-1, j-1, i, j) == true){
+				Iterate_Elements_Massive_For_Line(i - 1, j - 1, i, j, opredelitel);
+			}
+			if (Check_Massive_Elemetnt(i, j - 1) == true && Game_Field[i][j - 1] == 2 && Check_End_Of_Line(opredelitel, i, j - 1, i, j) == true) {
+				Iterate_Elements_Massive_For_Line(i, j - 1, i, j, opredelitel);
+			}
+			if (Check_Massive_Elemetnt(i + 1, j - 1) == true && Game_Field[i + 1][j - 1] == 2 && Check_End_Of_Line(opredelitel, i + 1, j - 1, i, j) == true) {
+				Iterate_Elements_Massive_For_Line(i + 1, j - 1, i, j, opredelitel);
+			}
+			if (Check_Massive_Elemetnt(i - 1, j) == true && Game_Field[i - 1][j] == 2 && Check_End_Of_Line(opredelitel, i - 1, j, i, j) == true) {
+				Iterate_Elements_Massive_For_Line(i - 1, j, i, j, opredelitel);
+			}
+			if (Check_Massive_Elemetnt(i + 1, j) == true && Game_Field[i + 1][j] == 2 && Check_End_Of_Line(opredelitel, i + 1, j, i, j) == true) {
+				Iterate_Elements_Massive_For_Line(i + 1, j, i, j, opredelitel);
+			}
+			if (Check_Massive_Elemetnt(i - 1, j + 1) == true && Game_Field[i - 1][j + 1] == 2 && Check_End_Of_Line(opredelitel, i - 1, j + 1, i, j) == true) {
+				Iterate_Elements_Massive_For_Line(i - 1, j + 1, i, j, opredelitel);
+			}
+			if (Check_Massive_Elemetnt(i, j + 1) == true && Game_Field[i][j + 1] == 2 && Check_End_Of_Line(opredelitel, i, j + 1, i, j) == true) {
+				Iterate_Elements_Massive_For_Line(i, j + 1, i, j, opredelitel);
+			}
+			if (Check_Massive_Elemetnt(i + 1, j + 1) == true && Game_Field[i + 1][j + 1] == 2 && Check_End_Of_Line(opredelitel, i + 1, j + 1, i, j) == true) {
+				Iterate_Elements_Massive_For_Line(i + 1, j + 1, i, j, opredelitel);
+			}
+		}
+
+	if (opredelitel == 2) {
+		if (Check_Massive_Elemetnt(i - 1, j - 1) == true && Game_Field[i - 1][j - 1] == 1 && Check_End_Of_Line(opredelitel, i - 1, j - 1, i, j) == true) {
+			Iterate_Elements_Massive_For_Line(i - 1, j - 1, i, j, opredelitel);
+		}
+		if (Check_Massive_Elemetnt(i, j - 1) == true && Game_Field[i][j - 1] == 1) {
+			Iterate_Elements_Massive_For_Line(i, j - 1, i, j, opredelitel);
+		}
+		if (Check_Massive_Elemetnt(i + 1, j - 1) == true && Game_Field[i + 1][j - 1] == 1) {
+			Iterate_Elements_Massive_For_Line(i + 1, j - 1, i, j, opredelitel);
+		}
+		if (Check_Massive_Elemetnt(i - 1, j) == true && Game_Field[i - 1][j] == 1) {
+			Iterate_Elements_Massive_For_Line(i - 1, j, i, j, opredelitel);
+		}
+		if (Check_Massive_Elemetnt(i + 1, j) == true && Game_Field[i + 1][j] == 1) {
+			Iterate_Elements_Massive_For_Line(i + 1, j, i, j, opredelitel);
+		}
+		if (Check_Massive_Elemetnt(i - 1, j + 1) == true && Game_Field[i - 1][j + 1] == 1) {
+			Iterate_Elements_Massive_For_Line(i - 1, j + 1, i, j, opredelitel);
+		}
+		if (Check_Massive_Elemetnt(i, j + 1) == true && Game_Field[i][j + 1] == 1) {
+			Iterate_Elements_Massive_For_Line(i, j + 1, i, j, opredelitel);
+		}
+		if (Check_Massive_Elemetnt(i + 1, j + 1) == true && Game_Field[i + 1][j + 1] == 1) {
+			Iterate_Elements_Massive_For_Line(i + 1, j + 1, i, j, opredelitel);
+		}
+	}
+}
+
+//------------------------------------------------------------------------------------
+// ѕроверка линии на ограничение фишкой 
+
+bool Game::Check_End_Of_Line(int opredelitel, int i, int j, int I, int J) {
+
+	int KI = i - I, KJ = j - J;
+
+	if (opredelitel == 1) {
+		while ((Check_Massive_Elemetnt(i + KI, j + KJ) == true && (Game_Field[i][j] == 2))) {
+			if (Game_Field[i + KI][j + KJ] == opredelitel) {
+				return true;
+			}
+			i = i + KI;
+			j = j + KJ;
+		}		
+	}
+
+	if (opredelitel == 2) {
+		while ((Check_Massive_Elemetnt(i + KI, j + KJ) == true && (Game_Field[i][j] == 1))) {
+			if (Game_Field[i + KI][j + KJ] == opredelitel) {
+				return true;
+			}
+			i = i + KI;
+			j = j + KJ;
+		}
+	}
+	return false;
+}
+
+//------------------------------------------------------------------------------------
+// ѕроверка линии на ограничение фишкой 
+
+void Game::Change_Tockens_In_Massive(int opredelitel, int i, int j, int I, int J){
+
+	int KI = i - I, KJ = j - J;
+
+	if (opredelitel == 1) {
+		while (Check_Massive_Elemetnt(i, j) == true) {
+			if (Game_Field[i][j] == 2) {
+				Game_Field[i][j] = 1;
+			}
+			i = i + KI;
+			j = j + KJ;
+		}
+	}
+
+	if (opredelitel == 2) {
+		while (Check_Massive_Elemetnt(i, j) == true) {
+			if (Game_Field[i][j] == 1) {
+				Game_Field[i][j] = 2;
+			}
+			i = i + KI;
+			j = j + KJ;
+		}
+	}
+
 }

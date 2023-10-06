@@ -21,6 +21,9 @@ public:
 	void Add_Tocken(int x, int y);
 	void Computer_Action(); 
 	bool Check_Massive_Elemetnt(int i, int j);
+	bool Check_End_Of_Line(int opredelitel, int i, int j, int I, int J);
+	void Change_Tockens_In_Massive(int opredelitel, int i, int j, int I, int J);
+	void Takeover_Tockens(int opredelitel, int i, int j);
 	void Iterate_Elements_Massive_For_Line(int i, int j, int I, int J, int opredelitel);
 	void Adding_Place_To_Tockens(int Opredelitel);               // определитель =1 то все варанты для фишки человека, если = 2 то для бота
 };
