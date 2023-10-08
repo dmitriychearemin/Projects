@@ -420,7 +420,6 @@ void Game::Change_Tockens_In_Massive(int opredelitel, int i, int j, int I, int J
 			if (Game_Field[i][j] == 2) {
 				Game_Field[i][j] = 1;
 			}
-			
 			i = i + KI;
 			j = j + KJ;
 		}
@@ -434,10 +433,80 @@ void Game::Change_Tockens_In_Massive(int opredelitel, int i, int j, int I, int J
 			if (Game_Field[i][j] == 1) {
 				Game_Field[i][j] = 2;
 			}
-			
 			i = i + KI;
 			j = j + KJ;
 		}
 	}
+
+}
+
+//------------------------------------------------------------------------------------
+// Оценочная функция 
+
+float Game::Evaluation_Function(int opredelitel, int i, int j) {
+	float Rating_Pos = 0;
+	
+	if ((i == 0 || i == 7) && (j==0 || j==7)) {
+		Rating_Pos = Rating_Pos + 1.5;
+	}
+
+	else if (i == 0 || i == 7 || j==0 || j==7) {
+		Rating_Pos++;
+	}
+
+	if (Check_Massive_Elemetnt(i - 1, j - 1) == true && Game_Field[i - 1][j - 1] != opredelitel && Check_End_Of_Line(opredelitel, i - 1, j - 1, i, j) == true && Game_Field[i - 1][j - 1] != 3 && Game_Field[i - 1][j - 1] != 4 && Game_Field[i - 1][j - 1] != 0) {
+		Rating_Pos = Rating_Pos + Count_Repainting_Tockens(opredelitel, i - 1, j - 1, i, j);
+	}
+	if (Check_Massive_Elemetnt(i, j - 1) == true && Game_Field[i][j - 1] != opredelitel && Check_End_Of_Line(opredelitel, i, j - 1, i, j) == true && Game_Field[i][j - 1] != 3 && Game_Field[i][j - 1] != 4 && Game_Field[i][j - 1] != 0) {
+		Rating_Pos = Rating_Pos + Count_Repainting_Tockens(opredelitel, i, j - 1, i, j);
+	}
+	if (Check_Massive_Elemetnt(i + 1, j - 1) == true && Game_Field[i + 1][j - 1] != opredelitel && Check_End_Of_Line(opredelitel, i + 1, j - 1, i, j) == true && Game_Field[i + 1][j - 1] != 3 && Game_Field[i + 1][j - 1] != 4 && Game_Field[i + 1][j - 1] != 0) {
+		Rating_Pos = Rating_Pos + Count_Repainting_Tockens(opredelitel, i + 1, j - 1, i, j);
+	}
+
+	if (Check_Massive_Elemetnt(i - 1, j) == true && Game_Field[i - 1][j] != opredelitel && Check_End_Of_Line(opredelitel, i - 1, j, i, j) == true && Game_Field[i - 1][j] != 3 && Game_Field[i - 1][j] != 4) {
+		Rating_Pos = Rating_Pos + Count_Repainting_Tockens(opredelitel, i - 1, j, i, j);
+	}
+
+	if (Check_Massive_Elemetnt(i + 1, j) == true && Game_Field[i + 1][j] != opredelitel && Check_End_Of_Line(opredelitel, i + 1, j, i, j) == true && Game_Field[i + 1][j] != 3 && Game_Field[i + 1][j] != 4) {
+		Rating_Pos = Rating_Pos + Count_Repainting_Tockens(opredelitel, i + 1, j, i, j);
+	}
+
+	if (Check_Massive_Elemetnt(i - 1, j + 1) == true && Game_Field[i - 1][j + 1] != opredelitel && Check_End_Of_Line(opredelitel, i - 1, j + 1, i, j) == true && Game_Field[i - 1][j + 1] != 3 && Game_Field[i - 1][j + 1] != 4 && Game_Field[i - 1][j + 1] != 0) {
+		Rating_Pos = Rating_Pos + Count_Repainting_Tockens(opredelitel, i - 1, j + 1, i, j);
+	}
+	if (Check_Massive_Elemetnt(i, j + 1) == true && Game_Field[i][j + 1] != opredelitel && Check_End_Of_Line(opredelitel, i, j + 1, i, j) == true && Game_Field[i][j + 1] != 3 && Game_Field[i][j + 1] != 4 && Game_Field[i][j + 1] != 0) {
+		Rating_Pos = Rating_Pos + Count_Repainting_Tockens(opredelitel, i, j + 1, i, j);
+	}
+	if (Check_Massive_Elemetnt(i + 1, j + 1) == true && Game_Field[i + 1][j + 1] != opredelitel && Check_End_Of_Line(opredelitel, i + 1, j + 1, i, j) == true && Game_Field[i + 1][j + 1] != 3 && Game_Field[i + 1][j + 1] != 4 && Game_Field[i + 1][j + 1] != 0) {
+		Rating_Pos = Rating_Pos + Count_Repainting_Tockens(opredelitel, i + 1, j + 1, i, j);
+	}
+
+}
+
+//------------------------------------------------------------------------------------
+// Подсчёт количества фишек, которые перекрасятся
+
+float Game::Count_Repainting_Tockens(int opredelitel, int i, int j, int I, int J) {
+	int KI = i - I, KJ = j - J;
+	float Count = 0;
+
+	if (opredelitel == 1) {
+		while ((Check_Massive_Elemetnt(i, j) == true && (Game_Field[i][j] == 2))) {
+			Count += 2;
+			i = i + KI;
+			j = j + KJ;
+		}
+	}
+
+	if (opredelitel == 2) {
+		while ((Check_Massive_Elemetnt(i, j) == true && (Game_Field[i][j] == 1))) {
+			Count += 2;
+			i = i + KI;
+			j = j + KJ;
+		}
+	}
+	return Count;
+
 
 }
