@@ -13,6 +13,7 @@ void Game::Game_Cycle() {
 	Create_Field();
 	Adding_Place_To_Tockens(Opredelitel_Player);
 	Building_Objects_On_Array();
+	Computer_Action();
 	sf::Vector2i localPosition = sf::Mouse::getPosition(window); //позиция мыши
 
 	sf::RectangleShape BackGr(sf::Vector2f(800, 800));
@@ -33,8 +34,8 @@ void Game::Game_Cycle() {
 
 			if (event.type == sf::Event::MouseButtonPressed) {
 				if (event.key.code == sf::Mouse::Left) {
-					Add_Tocken(sf::Mouse::getPosition().x, sf::Mouse::getPosition().y);
-					
+					Add_Tocken_White(sf::Mouse::getPosition().x, sf::Mouse::getPosition().y);
+					Computer_Action();
 				}	
 			}
 				
@@ -46,7 +47,7 @@ void Game::Game_Cycle() {
 		
 
 		window.draw(BackGr);
-
+		Count_Tockens();
 		for (int i = 0; i < Count_position; i++) {
 			if (Positions[i].getPosition().x != 0) {
 				window.draw(Positions[i]);
@@ -168,7 +169,7 @@ void Game::Create_Tockens() {
 //------------------------------------------------------------------------------------
 // Добавление фишки на экран
 
-void Game::Add_Tocken(int x, int y) {
+void Game::Add_Tocken_White(int x, int y) {
 	int I=0, J=0;
 	x = x - 468;
 	y = y - 76;
@@ -189,6 +190,7 @@ void Game::Add_Tocken(int x, int y) {
 	Takeover_Tockens(Opredelitel_Player, I, J);
 	Adding_Place_To_Tockens(Opredelitel_Player);
 	Building_Objects_On_Array();
+
 }
 
 //------------------------------------------------------------------------------------
@@ -266,6 +268,24 @@ void Game::Adding_Place_To_Tockens(int opredelitel) {
 						Iterate_Elements_Massive_For_Line(i + 1, j + 1, i, j, opredelitel);
 					}
 				}
+			}
+		}
+	}
+}
+
+//------------------------------------------------------------------------------------
+// Подсчёт числа фишек чёрного и белого цветов
+
+void Game::Count_Tockens() {
+	Counts_Tocken_Black = 0, Counts_Tocken_White = 0;
+
+	for (int i = 0; i < 8; i++) {
+		for (int j = 0; j < 8; j++) {
+			if (Game_Field[i][j] == 1) {
+				Counts_Tocken_White++;
+			}
+			if (Game_Field[i][j] == 2) {
+				Counts_Tocken_White++;
 			}
 		}
 	}
@@ -443,16 +463,9 @@ void Game::Change_Tockens_In_Massive(int opredelitel, int i, int j, int I, int J
 //------------------------------------------------------------------------------------
 // Оценочная функция 
 
-float Game::Evaluation_Function(int opredelitel, int i, int j) {
-	float Rating_Pos = 0;
-	
-	if ((i == 0 || i == 7) && (j==0 || j==7)) {
-		Rating_Pos = Rating_Pos + 1.5;
-	}
-
-	else if (i == 0 || i == 7 || j==0 || j==7) {
-		Rating_Pos++;
-	}
+int Game::Evaluation(int opredelitel, int i, int j) {
+	int Rating_Pos = 0;
+	Count_Tockens();
 
 	if (Check_Massive_Elemetnt(i - 1, j - 1) == true && Game_Field[i - 1][j - 1] != opredelitel && Check_End_Of_Line(opredelitel, i - 1, j - 1, i, j) == true && Game_Field[i - 1][j - 1] != 3 && Game_Field[i - 1][j - 1] != 4 && Game_Field[i - 1][j - 1] != 0) {
 		Rating_Pos = Rating_Pos + Count_Repainting_Tockens(opredelitel, i - 1, j - 1, i, j);
@@ -482,12 +495,40 @@ float Game::Evaluation_Function(int opredelitel, int i, int j) {
 		Rating_Pos = Rating_Pos + Count_Repainting_Tockens(opredelitel, i + 1, j + 1, i, j);
 	}
 
+	if (Counts_Tocken_Black + Counts_Tocken_White >= 63) {
+		if (opredelitel == 1) {
+			Counts_Tocken_White += Rating_Pos/2;
+			Counts_Tocken_Black -= Rating_Pos / 2;
+		}
+
+		if (opredelitel == 2) {
+			Counts_Tocken_Black += Rating_Pos / 2;
+			Counts_Tocken_White -= Rating_Pos / 2;
+		}
+
+		if (Counts_Tocken_Black > Counts_Tocken_White) {
+			return 9999;
+		}
+		if (Counts_Tocken_Black <= Counts_Tocken_White) {
+			return -9999;
+		}
+	}
+
+	if ((i == 0 || i == 7) && (j == 0 || j == 7)) {
+		Rating_Pos = Rating_Pos + 3;
+	}
+
+	else if (i == 0 || i == 7 || j == 0 || j == 7) {
+		Rating_Pos += 2;
+	}
+
+	return Rating_Pos;
 }
 
 //------------------------------------------------------------------------------------
 // Подсчёт количества фишек, которые перекрасятся
 
-float Game::Count_Repainting_Tockens(int opredelitel, int i, int j, int I, int J) {
+int Game::Count_Repainting_Tockens(int opredelitel, int i, int j, int I, int J) {
 	int KI = i - I, KJ = j - J;
 	float Count = 0;
 
