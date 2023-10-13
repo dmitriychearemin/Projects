@@ -14,7 +14,7 @@ class N_Tree {
 
 class List_N_Tree {
 	private:
-		
+		int Need_H;
 		int H_Tree, N_Count, MAX_WIDTH, MIN_WIDTH;
 
 	public:
@@ -22,4 +22,5 @@ class List_N_Tree {
 		void Create_N_Tree();
 		N_Tree* Add_Element(N_Tree*,int);
 		void Print_N_Tree(N_Tree*);
+		void Iterate_Tree(N_Tree*, int);
 };

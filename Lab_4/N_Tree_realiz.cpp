@@ -48,3 +48,15 @@ void List_N_Tree::Print_N_Tree(N_Tree* tree) {
 		}
 	}
 }
+
+
+
+
+void List_N_Tree::Iterate_Tree(N_Tree* tree, int cur_lvl) {
+	if (tree != nullptr) {
+		if(cur_lvl)
+		for (int i = 0; i < tree->Count_Cur_Pointers; i++) {
+			Iterate_Tree(tree->Array_Pointers[i],cur_lvl+1);
+		}
+	}
+}
