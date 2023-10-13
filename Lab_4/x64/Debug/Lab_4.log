@@ -1,3 +1,2 @@
-﻿  main.cpp
-C:\Users\ivanr\OneDrive\Рабочий стол\Учебники и задачники в унике\2курс\АСД\Лабораторные\Lab_4\main.cpp(7,12): warning C4244: аргумент: преобразование "time_t" в "unsigned int", возможна потеря данных
+﻿  N_Tree_realiz.cpp
   Lab_4.vcxproj -> C:\Users\ivanr\OneDrive\Рабочий стол\Учебники и задачники в унике\2курс\АСД\Лабораторные\Lab_4\x64\Debug\Lab_4.exe

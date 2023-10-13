@@ -2,7 +2,7 @@
 
 
 
-//Задача 12. Дано N - дерево.Найти в дереве самое широкое(узкое) поддерево имеющее заданную высоту.
+//Задача 12. Дано N - дерево.Найти в дереве самое широкое (узкое) поддерево имеющее заданную высоту.
 
 class N_Tree {
 	private:
@@ -23,4 +23,5 @@ class List_N_Tree {
 		N_Tree* Add_Element(N_Tree*,int);
 		void Print_N_Tree(N_Tree*);
 		void Iterate_Tree(N_Tree*, int);
+		void Search_Widths();
 };

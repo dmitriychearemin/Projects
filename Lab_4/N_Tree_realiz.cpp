@@ -50,11 +50,29 @@ void List_N_Tree::Print_N_Tree(N_Tree* tree) {
 }
 
 
+void  List_N_Tree::Search_Widths() {
+	MAX_WIDTH = Root->Count_Cur_Pointers;
+	MIN_WIDTH = Root->Count_Cur_Pointers;
+	std::cout << std::endl;
+	std::cout << "Need lvl Tree = " << std::endl;
+	std::cin >> Need_H;
 
+	Iterate_Tree(Root, 0);
+	std::cout << std::endl;
+	std::cout << "Minimum width on" << Need_H << "lvl = " << MIN_WIDTH << std::endl;
+	std::cout << "Maximum width on" << Need_H << "lvl = " << MAX_WIDTH << std::endl;
+}
 
 void List_N_Tree::Iterate_Tree(N_Tree* tree, int cur_lvl) {
 	if (tree != nullptr) {
-		if(cur_lvl)
+		if (cur_lvl == Need_H) {
+			if (tree->Count_Cur_Pointers > MAX_WIDTH) {
+				MAX_WIDTH = tree->Count_Cur_Pointers;
+			}
+			if (tree->Count_Cur_Pointers < MIN_WIDTH) {
+				MIN_WIDTH = tree->Count_Cur_Pointers;
+			}
+		}
 		for (int i = 0; i < tree->Count_Cur_Pointers; i++) {
 			Iterate_Tree(tree->Array_Pointers[i],cur_lvl+1);
 		}
