@@ -14,11 +14,12 @@ class N_Tree {
 
 class List_N_Tree {
 	private:
-		N_Tree* Root;
+		
 		int H_Tree, N_Count, MAX_WIDTH, MIN_WIDTH;
 
 	public:
+		N_Tree* Root;
 		void Create_N_Tree();
 		N_Tree* Add_Element(N_Tree*,int);
-		void Print_N_Tree(N_Tree* tree);
+		void Print_N_Tree(N_Tree*);
 };

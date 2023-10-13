@@ -20,24 +20,28 @@ N_Tree* List_N_Tree::Add_Element(N_Tree* tree, int cur_lvl) {
 		return(tree);
 	}
 
-	srand(time(NULL));
-
-	tree->Data = rand() % 100;
-	tree->Count_Cur_Pointers = rand() % N_Count;
-	tree->Array_Pointers = new N_Tree* [tree->Count_Cur_Pointers];
-
-	if (cur_lvl < H_Tree - 1) {
-		for (int i = 0; i < tree->Count_Cur_Pointers; i++) {
-			tree = Add_Element(tree->Array_Pointers[i], cur_lvl + 1);
-		}
-	}
-
 	else {
-		for (int i = 0; i < tree->Count_Cur_Pointers; i++) {
-			tree->Array_Pointers[i] = nullptr;
+		tree = new N_Tree;
+		tree->Data = 1 + rand() % 100;
+		tree->Count_Cur_Pointers = rand() % N_Count;
+		//std::cout << tree->Data << " " << tree->Count_Cur_Pointers << " " << cur_lvl << std::endl;
+		tree->Array_Pointers = new N_Tree * [tree->Count_Cur_Pointers];
+
+		if (cur_lvl < H_Tree - 1) {
+			for (int i = 0; i < tree->Count_Cur_Pointers; i++) {
+				tree = Add_Element(tree->Array_Pointers[i], cur_lvl + 1);
+			}
 		}
+
+		else {
+			for (int i = 0; i < tree->Count_Cur_Pointers; i++) {
+				tree->Array_Pointers[i] = nullptr;
+			}
+		}
+		return(tree);
 	}
-	return(tree);
+	
+	
 }
 
 
