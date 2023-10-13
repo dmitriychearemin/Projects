@@ -22,6 +22,7 @@ public:
 	void Computer_Action(); 
 	bool Check_Massive_Elemetnt(int i, int j);
 	void Count_Tockens();
+	void Read_Field_File();
 	bool Check_End_Of_Line(int opredelitel, int i, int j, int I, int J);
 	void Change_Tockens_In_Massive(int opredelitel, int i, int j, int I, int J);
 	void Takeover_Tockens(int opredelitel, int i, int j);

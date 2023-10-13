@@ -1,6 +1,7 @@
 #include <iostream>
 #include "Game.h"
 #include <SFML/Graphics.hpp>
+#include <fstream>
 
 //------------------------------------------------------------------------------------
 // Игровой цикл
@@ -11,6 +12,7 @@ void Game::Game_Cycle() {
 	sf::Time elapsed = clock.restart();
 	Create_Tockens();
 	Create_Field();
+	//Read_Field_File();
 	Adding_Place_To_Tockens(Opredelitel_Player);
 	Building_Objects_On_Array();
 	Computer_Action();
@@ -315,7 +317,7 @@ bool Game::Check_Massive_Elemetnt(int i, int j) {
 void Game::Iterate_Elements_Massive_For_Line(int i, int j, int I, int J, int opredelitel) {
 	
 	int KI = i - I, KJ = j - J;
-	while (i + KI > 0 || i + KI < 7 || j + KJ > 0 || j + KJ < 7) {
+	while (Check_Massive_Elemetnt(i+KI,j+KJ)) {
 		if (opredelitel == 1) {
 			if (Game_Field[i + KI][j + KJ] == 0) {
 				Game_Field[i + KI][j + KJ] = 3;
@@ -550,4 +552,43 @@ int Game::Count_Repainting_Tockens(int opredelitel, int i, int j, int I, int J) 
 	return Count;
 
 
+}
+
+//------------------------------------------------------------------------------------
+// запись поля с файла
+
+void Game::Read_Field_File() {
+	std::ifstream File;
+	File.open("Field.txt");
+	Game_Field = new int* [8];
+	for (int i = 0; i < 8; i++) {
+		Game_Field[i] = new int[8];
+	}
+	while (!File.eof()) {
+		for (int i = 0; i < 8; i++) {
+			for (int j = 0; j < 8; j++) {
+				File >> Game_Field[i][j];
+			}
+		}
+
+	}
+	File.close();
+
+	
+	Adding_Place_To_Tockens(Opredelitel_Bot);
+	for (int i = 0; i < 8; i++) {
+		std::cout << std::endl;
+		for (int j = 0; j < 8; j++) {
+			std::cout << Game_Field[i][j]<< " ";
+		}
+	}
+	std::cout << std::endl;
+	for (int i = 0; i < 8; i++) {
+		for (int j = 0; j < 8; j++) {
+			if (Game_Field[i][j] == 4) {
+				std::cout << Evaluation(Opredelitel_Bot, i, j) << std::endl;
+			}
+		}
+	}
+	
 }
