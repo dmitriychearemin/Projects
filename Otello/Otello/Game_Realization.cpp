@@ -287,7 +287,7 @@ void Game::Count_Tockens() {
 				Counts_Tocken_White++;
 			}
 			if (Game_Field[i][j] == 2) {
-				Counts_Tocken_White++;
+				Counts_Tocken_Black++;
 			}
 		}
 	}
@@ -469,6 +469,11 @@ int Game::Evaluation(int opredelitel, int i, int j) {
 	int Rating_Pos = 0;
 	Count_Tockens();
 
+	/*std::cout << std::endl;
+	std::cout << "Counts_Tocken_Black: " << Counts_Tocken_Black << std::endl;
+	std::cout << "Counts_Tocken_White: " << Counts_Tocken_White << std::endl;
+	*/
+
 	if (Check_Massive_Elemetnt(i - 1, j - 1) == true && Game_Field[i - 1][j - 1] != opredelitel && Check_End_Of_Line(opredelitel, i - 1, j - 1, i, j) == true && Game_Field[i - 1][j - 1] != 3 && Game_Field[i - 1][j - 1] != 4 && Game_Field[i - 1][j - 1] != 0) {
 		Rating_Pos = Rating_Pos + Count_Repainting_Tockens(opredelitel, i - 1, j - 1, i, j);
 	}
@@ -516,12 +521,22 @@ int Game::Evaluation(int opredelitel, int i, int j) {
 		}
 	}
 
+
+
 	if ((i == 0 || i == 7) && (j == 0 || j == 7)) {
 		Rating_Pos = Rating_Pos + 3;
 	}
 
 	else if (i == 0 || i == 7 || j == 0 || j == 7) {
 		Rating_Pos += 2;
+	}
+
+	if (opredelitel == Opredelitel_Bot) {
+		Rating_Pos += 2 * (Counts_Tocken_Black - Counts_Tocken_White);
+	}
+	
+	if (opredelitel == Opredelitel_Player) {
+		Rating_Pos += 2 * (Counts_Tocken_White - Counts_Tocken_Black);
 	}
 
 	return Rating_Pos;
