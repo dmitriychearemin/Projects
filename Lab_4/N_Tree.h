@@ -14,9 +14,9 @@ class N_Tree {
 
 class List_N_Tree {
 	private:
-		int Need_H;
+		int Need_H, cur_I;
 		int H_Tree, N_Count, MAX_WIDTH, MIN_WIDTH;
-
+		int* Mass_El;
 	public:
 		N_Tree* Root;
 		void Create_N_Tree();
@@ -24,4 +24,8 @@ class List_N_Tree {
 		void Print_N_Tree(N_Tree*);
 		void Iterate_Tree(N_Tree*, int);
 		void Search_Widths();
+		void Read_Tree_In_File();
+		bool Check_File_For_Symbols();
+		int Check_For_Number();
+		N_Tree* Add_Element_Of_File(N_Tree* tree, int cur_lvl);
 };
