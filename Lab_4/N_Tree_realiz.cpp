@@ -58,7 +58,6 @@ N_Tree* List_N_Tree::Add_Element_Of_Hand(N_Tree* tree, int cur_lvl) {
 		if (Cur_I == 0) {
 			Root = tree;
 		}
-		
 		std::cout << "Enter next element:";
 		std::cin >> tree->Data;
 		Cur_I++;
@@ -74,19 +73,18 @@ N_Tree* List_N_Tree::Add_Element_Of_Hand(N_Tree* tree, int cur_lvl) {
 	if (Cur_I < Counts_Elements && Check_Need_lvl_Full(0, cur_lvl, Root) != false) {
 		for (int i = 0; i < tree->Count_Cur_Pointers; i++) {
 			tree->Array_Pointers[i] = Add_Element_Of_Hand(tree->Array_Pointers[i], cur_lvl + 1);
-
 		}
 	}
 
 	if (Cur_I < Counts_Elements && tree != Root) {
+		std::cout << "Ret";
 		return (tree);
 	}
 
 	if (tree == Root && Cur_I < Counts_Elements) {
-		std::cout << "Root:";
 		cur_lvl = 0;
-		for (int i = 0; i < tree->Count_Cur_Pointers; i++) {
-			tree->Array_Pointers[i] = Add_Element_Of_Hand(tree->Array_Pointers[i], cur_lvl + 1);
+		while (Cur_I < Counts_Elements) {
+			tree = Add_Element_Of_Hand(Root, cur_lvl);
 		}
 	}
 	
@@ -108,7 +106,6 @@ bool List_N_Tree::Check_Need_lvl_Full(int cur_lvl, int need_lvl, N_Tree* tree) {
 				return false;
 			}
 			Check_Need_lvl_Full(cur_lvl + 1, need_lvl, tree->Array_Pointers[i]);
-			
 		}
 	}
 	
