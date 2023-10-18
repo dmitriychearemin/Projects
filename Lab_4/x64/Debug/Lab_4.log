@@ -1,2 +1,4 @@
 ﻿  N_Tree_realiz.cpp
+C:\Users\ivanr\OneDrive\Рабочий стол\Учебники и задачники в унике\2курс\АСД\Лабораторные\Lab_4\N_Tree_realiz.cpp(120): warning C4715: List_N_Tree::Check_Need_lvl_Full: значение возвращается не при всех путях выполнения
+C:\Users\ivanr\OneDrive\Рабочий стол\Учебники и задачники в унике\2курс\АСД\Лабораторные\Lab_4\N_Tree_realiz.cpp(100): warning C4715: List_N_Tree::Add_Element_Of_Hand: значение возвращается не при всех путях выполнения
   Lab_4.vcxproj -> C:\Users\ivanr\OneDrive\Рабочий стол\Учебники и задачники в унике\2курс\АСД\Лабораторные\Lab_4\x64\Debug\Lab_4.exe
