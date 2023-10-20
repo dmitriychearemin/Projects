@@ -4,13 +4,16 @@
 #include <ctime>
 #include <fstream>
 #include <string>
+#include <math.h>
+#include <stdlib.h>
 
 void List_N_Tree::Create_N_Tree_Rand() {
 	int cur_lvl = 0;
+	Root = nullptr;
 	std::cout << "Enter count N of Tree" << std::endl;
-	std::cin >> N_Count;
+	N_Count = Check_For_Number();
 	std::cout << "Enter H of Tree" << std::endl;
-	std::cin >> H_Tree;
+	H_Tree = Check_For_Number();
 	Root = Add_Element_Rand(Root, cur_lvl);
 }
 
@@ -39,21 +42,19 @@ N_Tree* List_N_Tree::Add_Element_Rand(N_Tree* tree, int cur_lvl) {
 }
 
 void List_N_Tree::Create_N_Tree_Of_Hand() {
-	int cur_lvl = 0;
-	Cur_I = 0;
-	Root = nullptr;
+	int cur_lvl = 0, element= 0;
+	
 	std::cout << "Enter count N of Tree" << std::endl;
-	std::cin >> N_Count;
-	std::cout << "Enter counts elements in Tree" << std::endl;
-	std::cin >> Counts_Elements;
+	N_Count = Check_For_Number();
+	std::cout << "Enter  Max H of Tree" << std::endl;
+	H_Tree = Check_For_Number();
 	Root = Add_Element_Of_Hand(Root, cur_lvl);
-
 
 }
 
 N_Tree* List_N_Tree::Add_Element_Of_Hand(N_Tree* tree, int cur_lvl) {
 
-	if (tree == nullptr && Cur_I < Counts_Elements && (cur_lvl==0 || Check_Need_lvl_Full(0, cur_lvl-1,Root) != false)) {
+	/*if (tree == nullptr && Cur_I < Counts_Elements && (cur_lvl == 0 || Check_Need_lvl_Full(0, cur_lvl - 1, Root) != false)) {
 		tree = new N_Tree;
 		if (Cur_I == 0) {
 			Root = tree;
@@ -77,39 +78,102 @@ N_Tree* List_N_Tree::Add_Element_Of_Hand(N_Tree* tree, int cur_lvl) {
 	}
 
 	if (Cur_I < Counts_Elements && tree != Root) {
-		std::cout << "Ret";
 		return (tree);
 	}
 
 	if (tree == Root && Cur_I < Counts_Elements) {
-		cur_lvl = 0;
 		while (Cur_I < Counts_Elements) {
-			tree = Add_Element_Of_Hand(Root, cur_lvl);
+			tree = Add_Element_Of_Hand(tree, 0);
 		}
 	}
-	
+
 	if (Cur_I >= Counts_Elements) {
 		return (Root);
 	}
+	*/
+	/*if (tree == nullptr && (cur_lvl == 0 || Full_Lvl_in_Tree(0, cur_lvl - 1, Root) == true)) {
+		tree = new N_Tree;
+		tree->Data = element;
+		K = false;
+		tree->Count_Cur_Pointers = N_Count;
+		std::cout << tree->Data << " " << tree->Count_Cur_Pointers << " " << cur_lvl << std::endl;
+		tree->Array_Pointers = new N_Tree * [tree->Count_Cur_Pointers];
+		for (int i = 0; i < N_Count; i++) {
+			tree->Array_Pointers[i] = nullptr;
+		}
+		return tree;
+	}
+
+	else if (Full_Lvl_in_Tree(0, cur_lvl, Root) == true) {
+		for (int i = 0; i < tree->Count_Cur_Pointers; i++) {
+			if (K != false) {
+				tree->Array_Pointers[i] = Add_Element_Of_Hand(tree->Array_Pointers[i], cur_lvl + 1, element);
+			}
+		}
+	}
+	return tree;*/
+
+	if (cur_lvl < H_Tree) {
+		tree = new N_Tree;
+		std::cout << "Enter element on lvl " << cur_lvl+1 << " : ";
+		tree->Data = Check_For_Number();;
+		tree->Count_Cur_Pointers = rand() % (N_Count-1)  + 2;
+		//std::cout << tree->Data << " " << tree->Count_Cur_Pointers << " " << cur_lvl << std::endl;
+		tree->Array_Pointers = new N_Tree * [tree->Count_Cur_Pointers];
+
+		if (cur_lvl == H_Tree - 1) {
+			for (int i = 0; i < tree->Count_Cur_Pointers; i++) {
+				tree->Array_Pointers[i] = nullptr;
+
+			}
+		}
+		else {
+			for (int i = 0; i < tree->Count_Cur_Pointers; i++) {
+				tree->Array_Pointers[i] = Add_Element_Of_Hand(tree->Array_Pointers[i], cur_lvl + 1);
+			}
+		}
+	}
+	return (tree);
 
 }
 
-bool List_N_Tree::Check_Need_lvl_Full(int cur_lvl, int need_lvl, N_Tree* tree) {
 
+/*bool List_N_Tree::Full_Lvl_in_Tree(int cur_lvl, int need_lvl, N_Tree* tree) {
+	
 	if (need_lvl == 0) {
 		return true;
 	}
 
-	if (tree!= nullptr) {
+	Check_Need_lvl_Full(cur_lvl, need_lvl, tree);
+
+	if (Summ_El_On_Lvl == pow(Counts_Elements, (need_lvl + 1))) {
+		return true;
+	}
+
+	return false;
+}
+*/
+/*void List_N_Tree::Check_Need_lvl_Full(int cur_lvl, int need_lvl, N_Tree* tree) {
+
+	
+
+	if (tree != nullptr ) {
+		if (cur_lvl == need_lvl) {
+
+		}
+
 		for (int i = 0; i < tree->Count_Cur_Pointers; i++) {
 			if (tree->Array_Pointers[i] == nullptr && cur_lvl + 1 == need_lvl) {
+				std::cout << "Fals";
 				return false;
 			}
 			Check_Need_lvl_Full(cur_lvl + 1, need_lvl, tree->Array_Pointers[i]);
 		}
 	}
+
 	
 }
+*/
 
 void List_N_Tree::Print_N_Tree(N_Tree* tree) {
 	if (tree != nullptr) {
@@ -120,18 +184,40 @@ void List_N_Tree::Print_N_Tree(N_Tree* tree) {
 	}
 }
 
+void List_N_Tree::Clear_Tree(N_Tree* tree) {
+	if (tree != nullptr) {
+		for (int i = 0; i < tree->Count_Cur_Pointers; i++) {
+			Clear_Tree(tree->Array_Pointers[i]);
+		}
+		for (int j = 0; j < tree->Count_Cur_Pointers; j++) {
+			delete tree->Array_Pointers[j];
+		}
+		delete tree;
+	}
+
+	if (Razm_Mass > 0) {
+		delete Mass_El;
+	}
+
+}
 
 void  List_N_Tree::Search_Widths() {
 	MAX_WIDTH = Root->Count_Cur_Pointers;
 	MIN_WIDTH = Root->Count_Cur_Pointers;
 	std::cout << std::endl;
 	std::cout << "Need lvl Tree = " << std::endl;
-	std::cin >> Need_H;
+	while (true) {
+		Need_H = Check_For_Number();
+		if (Need_H < H_Tree) {
+			break;
+		}
+	}
+	
 
 	Iterate_Tree(Root, 0);
 	std::cout << std::endl;
-	std::cout << "Minimum width on" << Need_H << "lvl = " << MIN_WIDTH << std::endl;
-	std::cout << "Maximum width on" << Need_H << "lvl = " << MAX_WIDTH << std::endl;
+	std::cout << "Minimum width on " << Need_H << " lvl = " << MIN_WIDTH << std::endl;
+	std::cout << "Maximum width on " << Need_H << " lvl = " << MAX_WIDTH << std::endl;
 }
 
 void List_N_Tree::Iterate_Tree(N_Tree* tree, int cur_lvl) {
@@ -186,11 +272,14 @@ void List_N_Tree::Iterate_Tree(N_Tree* tree, int cur_lvl) {
 
 */
 
+//---------------------------------------------------------
+//
+
 bool List_N_Tree::Check_File_For_Symbols() {
 	int  s = 0;
 	std::string str;
 	std::ifstream File;
-	File.open("Binare_Tree.txt");
+	File.open("N_Tree.txt");
 	while (!File.eof()) {
 		File >> str;
 		try {
@@ -205,7 +294,7 @@ bool List_N_Tree::Check_File_For_Symbols() {
 	return true;
 }
 
-// ----------------------------------------------------
+// --------------------------------------------------------
 // Проверка введеных данных на число
 
 int List_N_Tree::Check_For_Number() {
@@ -226,17 +315,62 @@ int List_N_Tree::Check_For_Number() {
 }
 
 //---------------------------------------------------------
-// 
-/*N_Tree* List_N_Tree::Add_Element_Of_File(N_Tree* tree, int cur_lvl) {
+//
+void List_N_Tree::Read_Tree_In_File() {
+	int  Cur_I = 0, Cur_El = 0;
+	Razm_Mass = 0;
+	if (Check_File_For_Symbols() != false) {
+		std::ifstream File;
+		File.open("N_Tree.txt");
+		if (File) {
+			while (!File.eof()) {
+				if (Cur_I == 0) {
+					File >> N_Count;
+					File >> H_Tree;
+					for (int i = 1; i < H_Tree + 1; i++) {
+						Razm_Mass += pow(N_Count, i);
+					}
+					Mass_El = new int[Razm_Mass];
+				}
+				//Mass_El = (int*) realloc (Mass_El, Razm_Mass * sizeof(int*));
+				File >> Mass_El[Cur_I];
+				
+				Cur_I++;
+			}
+			File.close();
+			for (Cur_I; Cur_I < Razm_Mass; Cur_I++) {
+				
+				Mass_El[Cur_I]=0;
+			}
 
-	if ((cur_lvl < H_Tree) and Mass_El[cur_I]!=0) {
+			Root = Add_Element_Of_File(Root, 0);
+		}
+		else {
+			std::cout << "File not exist" << std::endl;
+		}
+	}
+}
+
+//---------------------------------------------------------
+// 
+
+N_Tree* List_N_Tree::Add_Element_Of_File(N_Tree* tree, int cur_lvl) {
+
+	if ((cur_lvl < H_Tree)) {
 		tree = new N_Tree;
-		tree->Data = 1 + rand() % 100;
-		tree->Count_Cur_Pointers = 1 + rand() % N_Count;
-		std::cout << tree->Data << " " << tree->Count_Cur_Pointers << " " << cur_lvl << std::endl;
+		if (Cur_El_Mass < Razm_Mass) {
+			tree->Data = Mass_El[Cur_El_Mass];
+			Cur_El_Mass++;
+		}
+		else {
+			tree->Data = 0;
+		}
+		
+		tree->Count_Cur_Pointers = rand() % (N_Count - 1) + 2;
+		//std::cout << tree->Data << " " << tree->Count_Cur_Pointers << " " << cur_lvl << std::endl;
 		tree->Array_Pointers = new N_Tree * [tree->Count_Cur_Pointers];
 
-		if (cur_lvl == H_Tree - 1) {
+		if (cur_lvl == H_Tree - 1 || tree->Data==0) {
 			for (int i = 0; i < tree->Count_Cur_Pointers; i++) {
 				tree->Array_Pointers[i] = nullptr;
 
@@ -244,10 +378,9 @@ int List_N_Tree::Check_For_Number() {
 		}
 		else {
 			for (int i = 0; i < tree->Count_Cur_Pointers; i++) {
-				tree->Array_Pointers[i] = Add_Element(tree->Array_Pointers[i], cur_lvl + 1);
+				tree->Array_Pointers[i] = Add_Element_Of_File(tree->Array_Pointers[i], cur_lvl + 1);
 			}
 		}
 	}
 	return (tree);
 }
-*/

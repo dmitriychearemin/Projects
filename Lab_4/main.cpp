@@ -12,9 +12,9 @@ int main() {
 		std::cout << std::endl;
 		std::cout << "1 - Create random N-ary Tree" << std::endl;
 		std::cout << "2 - Create  N-ary Tree of hand" << std::endl;
-		
-		std::cout << "3 - Show Tree" << std::endl;
-		std::cout << "4 - Search Min Width and Max Width" << std::endl;
+		std::cout << "3 - Create  N-ary Tree of hand" << std::endl;
+		std::cout << "4 - Show Tree" << std::endl;
+		std::cout << "5 - Search Min Width and Max Width" << std::endl;
 		std::cout << "0 - Exit" << std::endl;
 
 		std::cin >> opredelitel;
@@ -23,20 +23,29 @@ int main() {
 		{
 
 		case 1:
+			Tr1.Clear_Tree(Tr1.Root);
 			Tr1.Create_N_Tree_Rand();
 			break;
 
 		case 2:
+			Tr1.Clear_Tree(Tr1.Root);
 			Tr1.Create_N_Tree_Of_Hand();
 			break;
 
 		case 3:
-			Tr1.Print_N_Tree(Tr1.Root);
+			Tr1.Clear_Tree(Tr1.Root);
+			Tr1.Read_Tree_In_File();
 			break;
 
 		case 4:
+			Tr1.Print_N_Tree(Tr1.Root);
+			break;
+
+		case 5:
 			Tr1.Search_Widths();
 			break;
+
+		
 
 		case 0:
 			exit(0);
