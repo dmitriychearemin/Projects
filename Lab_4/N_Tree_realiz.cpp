@@ -7,6 +7,9 @@
 #include <math.h>
 #include <stdlib.h>
 
+// --------------------------------------------------------
+// Создание рандомного дерева
+
 void List_N_Tree::Create_N_Tree_Rand() {
 	int cur_lvl = 0;
 	Root = nullptr;
@@ -17,6 +20,8 @@ void List_N_Tree::Create_N_Tree_Rand() {
 	Root = Add_Element_Rand(Root, cur_lvl);
 }
 
+// --------------------------------------------------------
+// Добавление рандомных элементов в дерево
 N_Tree* List_N_Tree::Add_Element_Rand(N_Tree* tree, int cur_lvl) {
 
 	if ((cur_lvl < H_Tree)) {
@@ -41,6 +46,9 @@ N_Tree* List_N_Tree::Add_Element_Rand(N_Tree* tree, int cur_lvl) {
 	return (tree);
 }
 
+// --------------------------------------------------------
+// Создание дерева в ручную
+
 void List_N_Tree::Create_N_Tree_Of_Hand() {
 	int cur_lvl = 0, element= 0;
 	
@@ -51,6 +59,9 @@ void List_N_Tree::Create_N_Tree_Of_Hand() {
 	Root = Add_Element_Of_Hand(Root, cur_lvl);
 
 }
+
+// --------------------------------------------------------
+// Добавление элементов через ручной ввод
 
 N_Tree* List_N_Tree::Add_Element_Of_Hand(N_Tree* tree, int cur_lvl) {
 
@@ -118,7 +129,6 @@ N_Tree* List_N_Tree::Add_Element_Of_Hand(N_Tree* tree, int cur_lvl) {
 		std::cout << "Enter element on lvl " << cur_lvl+1 << " : ";
 		tree->Data = Check_For_Number();;
 		tree->Count_Cur_Pointers = rand() % (N_Count-1)  + 2;
-		//std::cout << tree->Data << " " << tree->Count_Cur_Pointers << " " << cur_lvl << std::endl;
 		tree->Array_Pointers = new N_Tree * [tree->Count_Cur_Pointers];
 
 		if (cur_lvl == H_Tree - 1) {
@@ -175,6 +185,8 @@ N_Tree* List_N_Tree::Add_Element_Of_Hand(N_Tree* tree, int cur_lvl) {
 }
 */
 
+// --------------------------------------------------------
+// Вывод дерева
 void List_N_Tree::Print_N_Tree(N_Tree* tree) {
 	if (tree != nullptr) {
 		std::cout << tree->Data << "  ";
@@ -184,23 +196,24 @@ void List_N_Tree::Print_N_Tree(N_Tree* tree) {
 	}
 }
 
+// --------------------------------------------------------
+// Очистка дерева
 void List_N_Tree::Clear_Tree(N_Tree* tree) {
-	if (tree != nullptr) {
-		for (int i = 0; i < tree->Count_Cur_Pointers; i++) {
-			Clear_Tree(tree->Array_Pointers[i]);
-		}
-		for (int j = 0; j < tree->Count_Cur_Pointers; j++) {
-			delete tree->Array_Pointers[j];
-		}
-		delete tree;
+
+	if (tree == nullptr) {
+		return;
 	}
 
-	if (Razm_Mass > 0) {
-		delete Mass_El;
+	for (int i = 0; i < tree->Count_Cur_Pointers; i++) {
+		Clear_Tree(tree->Array_Pointers[i]);
 	}
+	delete tree;
 
-}
+}  
 
+
+// --------------------------------------------------------
+// Поиск самых широких и самых узких деревьев
 void  List_N_Tree::Search_Widths() {
 	MAX_WIDTH = Root->Count_Cur_Pointers;
 	MIN_WIDTH = Root->Count_Cur_Pointers;
@@ -208,21 +221,23 @@ void  List_N_Tree::Search_Widths() {
 	std::cout << "Need lvl Tree = " << std::endl;
 	while (true) {
 		Need_H = Check_For_Number();
-		if (Need_H < H_Tree) {
+		if (Need_H <= H_Tree && Need_H >= 1) {
 			break;
 		}
 	}
-	
+	Need_H -= 1;
 
 	Iterate_Tree(Root, 0);
 	std::cout << std::endl;
-	std::cout << "Minimum width on " << Need_H << " lvl = " << MIN_WIDTH << std::endl;
-	std::cout << "Maximum width on " << Need_H << " lvl = " << MAX_WIDTH << std::endl;
+	std::cout << "Minimum width on " << Need_H + 1 << " lvl = " << MIN_WIDTH << std::endl;
+	std::cout << "Maximum width on " << Need_H + 1 << " lvl = " << MAX_WIDTH << std::endl;
 }
 
+// --------------------------------------------------------
+// Перебор дерева для нахождение максимальной и минимальной вершин де
 void List_N_Tree::Iterate_Tree(N_Tree* tree, int cur_lvl) {
 	if (tree != nullptr) {
-		if (cur_lvl == Need_H) {
+		if (cur_lvl == Need_H-1) {
 			if (tree->Count_Cur_Pointers > MAX_WIDTH) {
 				MAX_WIDTH = tree->Count_Cur_Pointers;
 			}
@@ -272,8 +287,8 @@ void List_N_Tree::Iterate_Tree(N_Tree* tree, int cur_lvl) {
 
 */
 
-//---------------------------------------------------------
-//
+// --------------------------------------------------------
+// Проверка файла на наличие символов
 
 bool List_N_Tree::Check_File_For_Symbols() {
 	int  s = 0;
@@ -315,9 +330,13 @@ int List_N_Tree::Check_For_Number() {
 }
 
 //---------------------------------------------------------
-//
+// Чтение дерева с файла
 void List_N_Tree::Read_Tree_In_File() {
-	int  Cur_I = 0, Cur_El = 0;
+	if (Razm_Mass > 0) {
+		delete [] Mass_El;
+	}
+	int  Cur_I = 0;
+	Cur_El_Mass = 0;
 	Razm_Mass = 0;
 	if (Check_File_For_Symbols() != false) {
 		std::ifstream File;
@@ -332,7 +351,6 @@ void List_N_Tree::Read_Tree_In_File() {
 					}
 					Mass_El = new int[Razm_Mass];
 				}
-				//Mass_El = (int*) realloc (Mass_El, Razm_Mass * sizeof(int*));
 				File >> Mass_El[Cur_I];
 				
 				Cur_I++;
@@ -352,7 +370,7 @@ void List_N_Tree::Read_Tree_In_File() {
 }
 
 //---------------------------------------------------------
-// 
+// Добавление элементов в дерево из файла
 
 N_Tree* List_N_Tree::Add_Element_Of_File(N_Tree* tree, int cur_lvl) {
 

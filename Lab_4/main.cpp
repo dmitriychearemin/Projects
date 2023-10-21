@@ -12,7 +12,7 @@ int main() {
 		std::cout << std::endl;
 		std::cout << "1 - Create random N-ary Tree" << std::endl;
 		std::cout << "2 - Create  N-ary Tree of hand" << std::endl;
-		std::cout << "3 - Create  N-ary Tree of hand" << std::endl;
+		std::cout << "3 - Read N-ary Tree of File" << std::endl;
 		std::cout << "4 - Show Tree" << std::endl;
 		std::cout << "5 - Search Min Width and Max Width" << std::endl;
 		std::cout << "0 - Exit" << std::endl;
