@@ -145,7 +145,7 @@ void Game::Building_Objects_On_Array() {
 }
 
 //------------------------------------------------------------------------------------
-// Перевод из массива двумерного в одномерный 
+// Перевод из двумерного массива  в одномерный 
 
 int Game::CovertIJ_to_I(int i, int j) {
 	int I=0;
@@ -469,10 +469,6 @@ int Game::Evaluation(int opredelitel, int i, int j) {
 	int Rating_Pos = 0;
 	Count_Tockens();
 
-	/*std::cout << std::endl;
-	std::cout << "Counts_Tocken_Black: " << Counts_Tocken_Black << std::endl;
-	std::cout << "Counts_Tocken_White: " << Counts_Tocken_White << std::endl;
-	*/
 
 	if (Check_Massive_Elemetnt(i - 1, j - 1) == true && Game_Field[i - 1][j - 1] != opredelitel && Check_End_Of_Line(opredelitel, i - 1, j - 1, i, j) == true && Game_Field[i - 1][j - 1] != 3 && Game_Field[i - 1][j - 1] != 4 && Game_Field[i - 1][j - 1] != 0) {
 		Rating_Pos = Rating_Pos + Count_Repainting_Tockens(opredelitel, i - 1, j - 1, i, j);
@@ -606,4 +602,46 @@ void Game::Read_Field_File() {
 		}
 	}
 	
+}
+
+//------------------------------------------------------------------------------------
+// Функция минимакс
+
+
+//------------------------------------------------------------------------------------
+// Перевод из возможного, придуманного поля в текущее игровое поле
+
+void Game::Convert_Invented_Field_To_Field(Tree_MINIMAX* tree) {
+	for (int i = 0; i < 64; i++) {
+		for (int j = 0; j < 64; j++) {
+			tree->Invented_Game_Field[i][j] = Game_Field[i][j];
+		}
+	}
+
+}
+
+//------------------------------------------------------------------------------------
+// Перевод из текущего игрового поля в возможное, придуманное поле
+
+void Game::Convert_Field_To_Invented_Field(Tree_MINIMAX* tree) {
+	for (int i = 0; i < 64; i++) {
+		for (int j = 0; j < 64; j++) {
+			Game_Field[i][j] = tree->Invented_Game_Field[i][j];
+		}
+	}
+}
+
+//------------------------------------------------------------------------------------
+// Создание дерева всех возможных позиций
+
+Tree_MINIMAX* Game::Create_Game_Tree_Positions(Tree_MINIMAX* tree, int cur_lvl, int opredelitel) {
+
+	if (opredelitel == 1) {
+		opredelitel = 2;
+	}
+	else {
+		opredelitel = 1;
+	}
+
+	return;
 }

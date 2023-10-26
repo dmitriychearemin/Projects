@@ -17,5 +17,8 @@ C:\Users\ivanr\OneDrive\Рабочий стол\Учебники и задачн
           [
               T=float
           ]
-C:\Users\ivanr\OneDrive\Рабочий стол\Учебники и задачники в унике\2курс\АСД\Лабораторные\Otello\Otello\Game_Realization.cpp(567,9): warning C4244: return: преобразование "float" в "int", возможна потеря данных
-  Otello.vcxproj -> C:\Users\ivanr\OneDrive\Рабочий стол\Учебники и задачники в унике\2курс\АСД\Лабораторные\Otello\Otello\x64\Debug\Otello.exe
+C:\Users\ivanr\OneDrive\Рабочий стол\Учебники и задачники в унике\2курс\АСД\Лабораторные\Otello\Otello\Game_Realization.cpp(563,9): warning C4244: return: преобразование "float" в "int", возможна потеря данных
+C:\Users\ivanr\OneDrive\Рабочий стол\Учебники и задачники в унике\2курс\АСД\Лабораторные\Otello\Otello\Game_Realization.cpp(646,2): error C2561: Game::Create_Game_Tree_Positions: функция должна возвращать значение
+C:\Users\ivanr\OneDrive\Рабочий стол\Учебники и задачники в унике\2курс\АСД\Лабораторные\Otello\Otello\Game_Realization.cpp(637): message : см. объявление "Game::Create_Game_Tree_Positions"
+  main.cpp
+  Создание кода...
