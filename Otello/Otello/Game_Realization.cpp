@@ -9,13 +9,27 @@
 void Game::Game_Cycle() {
 	sf::RenderWindow window(sf::VideoMode(WIDTH_Screen,Height_Screen), "Otello");
 	sf::Clock clock;
+	int a = 0;
 	sf::Time elapsed = clock.restart();
 	Create_Tockens();
 	Create_Field();
-	//Read_Field_File();
+	Adding_Place_To_Tockens(Opredelitel_Bot);
+	Building_Objects_On_Array();
+
+	/////////////////   Первый ход компьютера ///////////////
+	Root = new Tree_MINIMAX;
+	Root->Eval = Evaluation(Opredelitel_Bot, 2, 3);
+	Game_Field[2][3] = 2;
+	Convert_Field_To_Invented_Field(Root);
+	Adding_Place_To_Tockens(Opredelitel_Player);
+	Count_Positions_For_Tockens();
+	Root->Count_Pos = Count_position;
+	Root->Mass_Pos = new Tree_MINIMAX*[Root->Count_Pos];
+	////////////////////////////////////////////////////////
+
 	Adding_Place_To_Tockens(Opredelitel_Player);
 	Building_Objects_On_Array();
-	Computer_Action();
+
 	sf::Vector2i localPosition = sf::Mouse::getPosition(window); //позиция мыши
 
 	sf::RectangleShape BackGr(sf::Vector2f(800, 800));
@@ -72,10 +86,11 @@ void Game::Game_Cycle() {
 
 void Game::Create_Field() {
 	
-	Game_Field = new int* [8];
+	/*Game_Field = new int* [8];
 	for (int i = 0; i < 8; i++) {
 		Game_Field[i] = new int[8];
 	}
+	*/
 	for (int i = 0; i < 8; i++) {
 		for (int j = 0; j < 8; j++) {
 			if (i == 3 && j == 3) {
@@ -105,6 +120,7 @@ void Game::Count_Positions_For_Tockens() {
 	Count_position = 0;
 	for (int i = 0; i < 8; i++) {
 		for (int j = 0; j < 8; j++) {
+			if(Game_Field[i][j]==3 || Game_Field[i][j] == 4)
 			Count_position++;
 		}
 	}
@@ -128,16 +144,16 @@ void Game::Building_Objects_On_Array() {
 		for (int j = 0; j < 8; j++) {
 			if (Game_Field[i][j] == 1) {
 				Tocken[CovertIJ_to_I(i, j)].setFillColor(sf::Color::White);
-				Tocken[CovertIJ_to_I(i, j)].setPosition(Koef + (Koef - 50) * i, Koef + (Koef - 50) * j);
+				Tocken[CovertIJ_to_I(i, j)].setPosition(Koef + (Koef - 50) * j, Koef + (Koef - 50) * i);
 			}
 			else if (Game_Field[i][j] == 2) {
 				Tocken[CovertIJ_to_I(i, j)].setFillColor(sf::Color::Black);
-				Tocken[CovertIJ_to_I(i, j)].setPosition(Koef + (Koef-50) * i,Koef + (Koef-50) * j);
+				Tocken[CovertIJ_to_I(i, j)].setPosition(Koef + (Koef-50) * j,Koef + (Koef-50) * i);
 			
 			}
 			else if (Game_Field[i][j] == 3) {
 				Positions[Count].setFillColor(sf::Color::Green);
-				Positions[Count].setPosition(Koef + (Koef - 50) * i, Koef + (Koef - 50) * j);
+				Positions[Count].setPosition(Koef + (Koef - 50) * j, Koef + (Koef - 50) * i);
 				Count++;
 			}
 		}
@@ -183,8 +199,8 @@ void Game::Add_Tocken_White(int x, int y) {
 	for (int i = 0; i < Count_position; i++) {
 		if ((Positions[i].getPosition().x - 49) < x && (Positions[i].getPosition().x + 49) > x && (Positions[i].getPosition().y - 49) < y && (Positions[i].getPosition().y + 49) > y) {
 			
-			I = (Positions[i].getPosition().x - Koef) / (Koef - 50);
-			J = (Positions[i].getPosition().y - Koef) / (Koef - 50);
+			J = (Positions[i].getPosition().x - Koef) / (Koef - 50);
+			I = (Positions[i].getPosition().y - Koef) / (Koef - 50);
 			Game_Field[I][J] = 1;
 			break;
 		}
@@ -568,7 +584,7 @@ int Game::Count_Repainting_Tockens(int opredelitel, int i, int j, int I, int J) 
 //------------------------------------------------------------------------------------
 // запись поля с файла
 
-void Game::Read_Field_File() {
+/*void Game::Read_Field_File() {
 	std::ifstream File;
 	File.open("Field.txt");
 	Game_Field = new int* [8];
@@ -603,7 +619,7 @@ void Game::Read_Field_File() {
 	}
 	
 }
-
+*/
 //------------------------------------------------------------------------------------
 // Функция минимакс
 
@@ -612,9 +628,9 @@ void Game::Read_Field_File() {
 // Перевод из возможного, придуманного поля в текущее игровое поле
 
 void Game::Convert_Invented_Field_To_Field(Tree_MINIMAX* tree) {
-	for (int i = 0; i < 64; i++) {
-		for (int j = 0; j < 64; j++) {
-			tree->Invented_Game_Field[i][j] = Game_Field[i][j];
+	for (int i = 0; i < 8; i++) {
+		for (int j = 0; j < 8; j++) {
+			 Game_Field[i][j] =tree->Invented_Game_Field[i][j];
 		}
 	}
 
@@ -624,9 +640,9 @@ void Game::Convert_Invented_Field_To_Field(Tree_MINIMAX* tree) {
 // Перевод из текущего игрового поля в возможное, придуманное поле
 
 void Game::Convert_Field_To_Invented_Field(Tree_MINIMAX* tree) {
-	for (int i = 0; i < 64; i++) {
-		for (int j = 0; j < 64; j++) {
-			Game_Field[i][j] = tree->Invented_Game_Field[i][j];
+	for (int i = 0; i < 8; i++) {
+		for (int j = 0; j < 8; j++) {
+			 tree->Invented_Game_Field[i][j] = Game_Field[i][j];
 		}
 	}
 }
@@ -643,5 +659,12 @@ Tree_MINIMAX* Game::Create_Game_Tree_Positions(Tree_MINIMAX* tree, int cur_lvl, 
 		opredelitel = 1;
 	}
 
+	if (cur_lvl < 63 && tree == nullptr) {
+
+
+	}
+
+
 	return;
 }
+
