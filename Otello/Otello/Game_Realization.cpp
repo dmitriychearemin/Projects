@@ -11,20 +11,28 @@ void Game::Game_Cycle() {
 	sf::Clock clock;
 	int a = 0;
 	sf::Time elapsed = clock.restart();
+	sf::Font font;
+	if (!font.loadFromFile("arial_bolditalicmt.ttf"))
+	{
+		std::cout << "fdsgnjs";
+	}
+	text[0].setFont(font);
+	text[1].setFont(font);
+
 	Create_Tockens();
 	Create_Field();
 	Adding_Place_To_Tockens(Opredelitel_Bot);
 	Building_Objects_On_Array();
 
 	/////////////////   Первый ход компьютера ///////////////
-	Root = new Tree_MINIMAX;
-	Root->Eval = Evaluation(Opredelitel_Bot, 2, 3);
+	/*Root->Eval = Evaluation(Opredelitel_Bot, 2, 3);
 	Game_Field[2][3] = 2;
 	Convert_Field_To_Invented_Field(Root);
 	Adding_Place_To_Tockens(Opredelitel_Player);
 	Count_Positions_For_Tockens();
 	Root->Count_Pos = Count_position;
 	Root->Mass_Pos = new Tree_MINIMAX*[Root->Count_Pos];
+	*/
 	////////////////////////////////////////////////////////
 
 	Adding_Place_To_Tockens(Opredelitel_Player);
@@ -61,7 +69,7 @@ void Game::Game_Cycle() {
 			sf::Time elapsed = clock.restart();
 		}
 		
-
+		window.draw(Window);
 		window.draw(BackGr);
 		Count_Tockens();
 		for (int i = 0; i < Count_position; i++) {
@@ -74,7 +82,10 @@ void Game::Game_Cycle() {
 				window.draw(Tocken[i]);
 			}
 		}
-
+		window.draw(Count_Tocken[0]);
+		window.draw(Count_Tocken[1]);
+		window.draw(text[0]);
+		window.draw(text[1]);
 		window.display();
 	}
 
@@ -86,11 +97,6 @@ void Game::Game_Cycle() {
 
 void Game::Create_Field() {
 	
-	/*Game_Field = new int* [8];
-	for (int i = 0; i < 8; i++) {
-		Game_Field[i] = new int[8];
-	}
-	*/
 	for (int i = 0; i < 8; i++) {
 		for (int j = 0; j < 8; j++) {
 			if (i == 3 && j == 3) {
@@ -111,6 +117,18 @@ void Game::Create_Field() {
 		}
 	}
 	
+	Window.setSize(sf::Vector2f(1000, 1000));
+	Window.setPosition(0, 0);
+	Window.setFillColor(sf::Color::Magenta);
+	
+	text[0].setCharacterSize(25);
+	text[1].setCharacterSize(25);
+	text[0].setFillColor(sf::Color::Red);
+	text[1].setFillColor(sf::Color::Red);
+	text[0].setStyle(sf::Text::Bold | sf::Text::Underlined);
+	text[1].setStyle(sf::Text::Bold | sf::Text::Underlined);
+	text[0].setPosition(140, 35);
+	text[1].setPosition(290, 35);
 }
 
 //------------------------------------------------------------------------------------
@@ -158,6 +176,16 @@ void Game::Building_Objects_On_Array() {
 			}
 		}
 	}
+
+	Count_Tocken[0].setFillColor(sf::Color::White);
+	Count_Tocken[1].setFillColor(sf::Color::Black);
+	Count_Tocken[0].setPosition(150,50);
+	Count_Tocken[1].setPosition(300,50);
+	Count_Tockens();
+	Convert_Int_To_String(Counts_Tocken_White);
+	text[0].setString(Tock_Count);
+	Convert_Int_To_String(Counts_Tocken_Black);
+	text[1].setString(Tock_Count);
 }
 
 //------------------------------------------------------------------------------------
@@ -178,10 +206,17 @@ int Game::CovertIJ_to_I(int i, int j) {
 // Создание объектов и приведение их к параметрам, фишки, поля куда можно поставить фишку
 
 void Game::Create_Tockens() {
+
 	for (int i = 0; i < 64; i++) {
 		Tocken[i].setRadius(40);
 		Tocken[i].setOrigin(40,40);
 	}
+
+	Count_Tocken[0].setRadius(40);
+	Count_Tocken[0].setOrigin(40, 40);
+	Count_Tocken[1].setRadius(40);
+	Count_Tocken[1].setOrigin(40, 40);
+	
 }
 
 //------------------------------------------------------------------------------------
@@ -192,8 +227,8 @@ void Game::Add_Tocken_White(int x, int y) {
 	x = x - 468;
 	y = y - 76;
 	std::cout << x << " " << y << std::endl;
-	std::cout << Positions[0].getPosition().x << " " << Positions[0].getPosition().y << std::endl;
-	std::cout << Positions[1].getPosition().x << " " << Positions[1].getPosition().y << std::endl;
+	//std::cout << Positions[0].getPosition().x << " " << Positions[0].getPosition().y << std::endl;
+	//std::cout << Positions[1].getPosition().x << " " << Positions[1].getPosition().y << std::endl;
 
 
 	for (int i = 0; i < Count_position; i++) {
@@ -416,7 +451,6 @@ void Game::Takeover_Tockens(int opredelitel, int i, int j) {
 
 //------------------------------------------------------------------------------------
 // Проверка линии на ограничение фишкой 
-
 bool Game::Check_End_Of_Line(int opredelitel, int i, int j, int I, int J) {
 
 	int KI = i - I, KJ = j - J;
@@ -441,6 +475,13 @@ bool Game::Check_End_Of_Line(int opredelitel, int i, int j, int I, int J) {
 		}
 	}
 	return false;
+}
+
+
+
+void Game::Convert_Int_To_String(int i)
+{
+	Tock_Count = std::to_string(i);
 }
 
 //------------------------------------------------------------------------------------
@@ -627,10 +668,10 @@ int Game::Count_Repainting_Tockens(int opredelitel, int i, int j, int I, int J) 
 //------------------------------------------------------------------------------------
 // Перевод из возможного, придуманного поля в текущее игровое поле
 
-void Game::Convert_Invented_Field_To_Field(Tree_MINIMAX* tree) {
+void Game::Convert_Invented_Field_To_Field() {
 	for (int i = 0; i < 8; i++) {
 		for (int j = 0; j < 8; j++) {
-			 Game_Field[i][j] =tree->Invented_Game_Field[i][j];
+			// Game_Field[i][j] =tree->Invented_Game_Field[i][j];
 		}
 	}
 
@@ -639,32 +680,13 @@ void Game::Convert_Invented_Field_To_Field(Tree_MINIMAX* tree) {
 //------------------------------------------------------------------------------------
 // Перевод из текущего игрового поля в возможное, придуманное поле
 
-void Game::Convert_Field_To_Invented_Field(Tree_MINIMAX* tree) {
+void Game::Convert_Field_To_Invented_Field() {
 	for (int i = 0; i < 8; i++) {
 		for (int j = 0; j < 8; j++) {
-			 tree->Invented_Game_Field[i][j] = Game_Field[i][j];
+			 //tree->Invented_Game_Field[i][j] = Game_Field[i][j];
 		}
 	}
 }
 
-//------------------------------------------------------------------------------------
-// Создание дерева всех возможных позиций
 
-Tree_MINIMAX* Game::Create_Game_Tree_Positions(Tree_MINIMAX* tree, int cur_lvl, int opredelitel) {
-
-	if (opredelitel == 1) {
-		opredelitel = 2;
-	}
-	else {
-		opredelitel = 1;
-	}
-
-	if (cur_lvl < 63 && tree == nullptr) {
-
-
-	}
-
-
-	return;
-}
 
