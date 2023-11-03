@@ -7,7 +7,8 @@
 // Игровой цикл
 
 void Game::Game_Cycle() {
-	sf::RenderWindow window(sf::VideoMode(WIDTH_Screen,Height_Screen), "Otello");
+	bool k = true;
+	sf::RenderWindow window(sf::VideoMode(WIDTH_Screen, Height_Screen), "Otello");
 	sf::Clock clock;
 	int a = 0;
 	sf::Time elapsed = clock.restart();
@@ -21,21 +22,8 @@ void Game::Game_Cycle() {
 
 	Create_Tockens();
 	Create_Field();
-	Adding_Place_To_Tockens(Opredelitel_Bot);
-	Building_Objects_On_Array();
-
-	/////////////////   Первый ход компьютера ///////////////
-	/*Root->Eval = Evaluation(Opredelitel_Bot, 2, 3);
 	Game_Field[2][3] = 2;
-	Convert_Field_To_Invented_Field(Root);
-	Adding_Place_To_Tockens(Opredelitel_Player);
-	Count_Positions_For_Tockens();
-	Root->Count_Pos = Count_position;
-	Root->Mass_Pos = new Tree_MINIMAX*[Root->Count_Pos];
-	*/
-	////////////////////////////////////////////////////////
-
-	Adding_Place_To_Tockens(Opredelitel_Player);
+	Adding_Place_To_Tockens(Opredelitel_Player, Game_Field);
 	Building_Objects_On_Array();
 
 	sf::Vector2i localPosition = sf::Mouse::getPosition(window); //позиция мыши
@@ -58,25 +46,32 @@ void Game::Game_Cycle() {
 
 			if (event.type == sf::Event::MouseButtonPressed) {
 				if (event.key.code == sf::Mouse::Left) {
-					Add_Tocken_White(sf::Mouse::getPosition().x, sf::Mouse::getPosition().y);
-					Computer_Action();
-				}	
+					if (k == true) {
+						Add_Tocken_White(sf::Mouse::getPosition().x, sf::Mouse::getPosition().y);
+						k = false;
+					}
+
+				}
 			}
-				
+
 		}
 		if (elapsed.asMicroseconds() > 300) {
 			window.clear();
 			sf::Time elapsed = clock.restart();
 		}
-		
+
+
 		window.draw(Window);
 		window.draw(BackGr);
-		Count_Tockens();
-		for (int i = 0; i < Count_position; i++) {
-			if (Positions[i].getPosition().x != 0) {
-				window.draw(Positions[i]);
+		Count_Tockens(Game_Field);
+		if (k != false) {
+			for (int i = 0; i < Count_position; i++) {
+				if (Positions[i].getPosition().x != 0) {
+					window.draw(Positions[i]);
+				}
 			}
 		}
+		
 		for (int i = 0; i < 64; i++) {
 			if (Tocken[i].getPosition().x != 0) {
 				window.draw(Tocken[i]);
@@ -87,9 +82,12 @@ void Game::Game_Cycle() {
 		window.draw(text[0]);
 		window.draw(text[1]);
 		window.display();
+		if (k == false) {
+			Computer_Action();
+			k = true;
+		}
+
 	}
-
-
 }
 
 //------------------------------------------------------------------------------------
@@ -97,6 +95,13 @@ void Game::Game_Cycle() {
 
 void Game::Create_Field() {
 	
+	Game_Field = new int* [8];
+	Dream_Game_Field = new int* [8];
+	for (int i = 0; i < 8; i++) {
+		Game_Field[i] = new int[8];
+		Dream_Game_Field[i] = new int[8];
+	}
+
 	for (int i = 0; i < 8; i++) {
 		for (int j = 0; j < 8; j++) {
 			if (i == 3 && j == 3) {
@@ -134,7 +139,7 @@ void Game::Create_Field() {
 //------------------------------------------------------------------------------------
 // Отрисовка объектов
 
-void Game::Count_Positions_For_Tockens() {
+void Game::Count_Positions_For_Tockens(int** Game_Field) {
 	Count_position = 0;
 	for (int i = 0; i < 8; i++) {
 		for (int j = 0; j < 8; j++) {
@@ -149,7 +154,7 @@ void Game::Count_Positions_For_Tockens() {
 
 void Game::Building_Objects_On_Array() {
 	int Count = 0;
-	Count_Positions_For_Tockens();
+	Count_Positions_For_Tockens(Game_Field);
 	Positions = new sf::RectangleShape[Count_position];
 	if (Count_position !=0) {
 		for (int i = 0; i < Count_position; i++) {
@@ -181,7 +186,7 @@ void Game::Building_Objects_On_Array() {
 	Count_Tocken[1].setFillColor(sf::Color::Black);
 	Count_Tocken[0].setPosition(150,50);
 	Count_Tocken[1].setPosition(300,50);
-	Count_Tockens();
+	Count_Tockens(Game_Field);
 	Convert_Int_To_String(Counts_Tocken_White);
 	text[0].setString(Tock_Count);
 	Convert_Int_To_String(Counts_Tocken_Black);
@@ -240,16 +245,15 @@ void Game::Add_Tocken_White(int x, int y) {
 			break;
 		}
 	}
-	Takeover_Tockens(Opredelitel_Player, I, J);
-	Adding_Place_To_Tockens(Opredelitel_Player);
+	Takeover_Tockens(Opredelitel_Player, I, J,Game_Field);
 	Building_Objects_On_Array();
-
+	
 }
 
 //------------------------------------------------------------------------------------
 // Определение позиций куда можно поставить фишку
 
-void Game::Adding_Place_To_Tockens(int opredelitel) {
+void Game::Adding_Place_To_Tockens(int opredelitel, int** Game_Field) {
 	
 	for (int i = 0; i < 8; i++){
 		for (int j= 0; j < 8; j++){
@@ -263,29 +267,29 @@ void Game::Adding_Place_To_Tockens(int opredelitel) {
 		for (int i = 0; i < 8; i++) {
 			for (int j = 0; j < 8; j++) {
 				if (Game_Field[i][j] == 1) {
-					if (Check_Massive_Elemetnt(i - 1, j - 1) == true && Game_Field[i-1][j-1] == 2) {
-						Iterate_Elements_Massive_For_Line(i - 1, j - 1, i, j, opredelitel);
+					if (Check_Massive_Elemetnt(i - 1, j - 1, Game_Field) == true && Game_Field[i-1][j-1] == 2) {
+						Iterate_Elements_Massive_For_Line(i - 1, j - 1, i, j, opredelitel, Game_Field);
 					}
-					if (Check_Massive_Elemetnt(i, j - 1) == true && Game_Field[i][j - 1] == 2) {
-						Iterate_Elements_Massive_For_Line(i , j - 1, i, j, opredelitel);
+					if (Check_Massive_Elemetnt(i, j - 1, Game_Field) == true && Game_Field[i][j - 1] == 2) {
+						Iterate_Elements_Massive_For_Line(i , j - 1, i, j, opredelitel, Game_Field);
 					}
-					if (Check_Massive_Elemetnt(i + 1, j - 1) == true && Game_Field[i + 1][j - 1] == 2) {
-						Iterate_Elements_Massive_For_Line(i + 1, j - 1, i, j, opredelitel);
+					if (Check_Massive_Elemetnt(i + 1, j - 1, Game_Field) == true && Game_Field[i + 1][j - 1] == 2) {
+						Iterate_Elements_Massive_For_Line(i + 1, j - 1, i, j, opredelitel, Game_Field);
 					}
-					if (Check_Massive_Elemetnt(i - 1, j) == true && Game_Field[i - 1][j ] == 2) {
-						Iterate_Elements_Massive_For_Line(i - 1, j, i, j, opredelitel);
+					if (Check_Massive_Elemetnt(i - 1, j, Game_Field) == true && Game_Field[i - 1][j ] == 2) {
+						Iterate_Elements_Massive_For_Line(i - 1, j, i, j, opredelitel, Game_Field);
 					}
-					if (Check_Massive_Elemetnt(i + 1, j ) == true && Game_Field[i + 1][j ] == 2) {
-						Iterate_Elements_Massive_For_Line(i + 1, j, i, j, opredelitel);
+					if (Check_Massive_Elemetnt(i + 1, j, Game_Field) == true && Game_Field[i + 1][j ] == 2) {
+						Iterate_Elements_Massive_For_Line(i + 1, j, i, j, opredelitel, Game_Field);
 					}
-					if (Check_Massive_Elemetnt(i - 1, j + 1) == true && Game_Field[i - 1][j + 1] == 2) {
-						Iterate_Elements_Massive_For_Line(i - 1, j + 1, i, j, opredelitel);
+					if (Check_Massive_Elemetnt(i - 1, j + 1, Game_Field) == true && Game_Field[i - 1][j + 1] == 2) {
+						Iterate_Elements_Massive_For_Line(i - 1, j + 1, i, j, opredelitel, Game_Field);
 					}
-					if (Check_Massive_Elemetnt(i , j + 1) == true && Game_Field[i][j + 1] == 2) {
-						Iterate_Elements_Massive_For_Line(i , j + 1, i, j, opredelitel);
+					if (Check_Massive_Elemetnt(i , j + 1, Game_Field) == true && Game_Field[i][j + 1] == 2) {
+						Iterate_Elements_Massive_For_Line(i , j + 1, i, j, opredelitel, Game_Field);
 					}
-					if (Check_Massive_Elemetnt(i + 1, j + 1) == true && Game_Field[i + 1][j + 1] == 2) {
-						Iterate_Elements_Massive_For_Line(i + 1, j + 1, i, j, opredelitel);
+					if (Check_Massive_Elemetnt(i + 1, j + 1, Game_Field) == true && Game_Field[i + 1][j + 1] == 2) {
+						Iterate_Elements_Massive_For_Line(i + 1, j + 1, i, j, opredelitel, Game_Field);
 					}
 				}
 			}
@@ -296,29 +300,29 @@ void Game::Adding_Place_To_Tockens(int opredelitel) {
 		for (int i = 0; i < 8; i++) {
 			for (int j = 0; j < 8; j++) {
 				if (Game_Field[i][j] == 2) {
-					if (Check_Massive_Elemetnt(i - 1, j - 1) == true && Game_Field[i - 1][j - 1] == 1) {
-						Iterate_Elements_Massive_For_Line(i - 1, j - 1, i, j, opredelitel);
+					if (Check_Massive_Elemetnt(i - 1, j - 1, Game_Field) == true && Game_Field[i - 1][j - 1] == 1) {
+						Iterate_Elements_Massive_For_Line(i - 1, j - 1, i, j, opredelitel, Game_Field);
 					}
-					if (Check_Massive_Elemetnt(i, j - 1) == true && Game_Field[i][j - 1] == 1) {
-						Iterate_Elements_Massive_For_Line(i, j - 1, i, j, opredelitel);
+					if (Check_Massive_Elemetnt(i, j - 1, Game_Field) == true && Game_Field[i][j - 1] == 1) {
+						Iterate_Elements_Massive_For_Line(i, j - 1, i, j, opredelitel, Game_Field);
 					}
-					if (Check_Massive_Elemetnt(i + 1, j - 1) == true && Game_Field[i + 1][j - 1] == 1) {
-						Iterate_Elements_Massive_For_Line(i + 1, j - 1, i, j, opredelitel);
+					if (Check_Massive_Elemetnt(i + 1, j - 1, Game_Field) == true && Game_Field[i + 1][j - 1] == 1) {
+						Iterate_Elements_Massive_For_Line(i + 1, j - 1, i, j, opredelitel, Game_Field);
 					}
-					if (Check_Massive_Elemetnt(i - 1, j) == true && Game_Field[i - 1][j] == 1) {
-						Iterate_Elements_Massive_For_Line(i - 1, j, i, j, opredelitel);
+					if (Check_Massive_Elemetnt(i - 1, j, Game_Field) == true && Game_Field[i - 1][j] == 1) {
+						Iterate_Elements_Massive_For_Line(i - 1, j, i, j, opredelitel, Game_Field);
 					}
-					if (Check_Massive_Elemetnt(i + 1, j) == true && Game_Field[i + 1][j] == 1) {
-						Iterate_Elements_Massive_For_Line(i + 1, j, i, j, opredelitel);
+					if (Check_Massive_Elemetnt(i + 1, j, Game_Field) == true && Game_Field[i + 1][j] == 1) {
+						Iterate_Elements_Massive_For_Line(i + 1, j, i, j, opredelitel, Game_Field);
 					}
-					if (Check_Massive_Elemetnt(i - 1, j + 1) == true && Game_Field[i - 1][j + 1] == 1) {
-						Iterate_Elements_Massive_For_Line(i - 1, j + 1, i, j, opredelitel);
+					if (Check_Massive_Elemetnt(i - 1, j + 1, Game_Field) == true && Game_Field[i - 1][j + 1] == 1) {
+						Iterate_Elements_Massive_For_Line(i - 1, j + 1, i, j, opredelitel, Game_Field);
 					}
-					if (Check_Massive_Elemetnt(i, j + 1) == true && Game_Field[i][j + 1] == 1) {
-						Iterate_Elements_Massive_For_Line(i, j + 1, i, j, opredelitel);
+					if (Check_Massive_Elemetnt(i, j + 1, Game_Field) == true && Game_Field[i][j + 1] == 1) {
+						Iterate_Elements_Massive_For_Line(i, j + 1, i, j, opredelitel, Game_Field);
 					}
-					if (Check_Massive_Elemetnt(i + 1, j + 1) == true && Game_Field[i + 1][j + 1] == 1) {
-						Iterate_Elements_Massive_For_Line(i + 1, j + 1, i, j, opredelitel);
+					if (Check_Massive_Elemetnt(i + 1, j + 1, Game_Field) == true && Game_Field[i + 1][j + 1] == 1) {
+						Iterate_Elements_Massive_For_Line(i + 1, j + 1, i, j, opredelitel, Game_Field);
 					}
 				}
 			}
@@ -329,7 +333,7 @@ void Game::Adding_Place_To_Tockens(int opredelitel) {
 //------------------------------------------------------------------------------------
 // Подсчёт числа фишек чёрного и белого цветов
 
-void Game::Count_Tockens() {
+void Game::Count_Tockens(int** Game_Field) {
 	Counts_Tocken_Black = 0, Counts_Tocken_White = 0;
 
 	for (int i = 0; i < 8; i++) {
@@ -342,20 +346,31 @@ void Game::Count_Tockens() {
 			}
 		}
 	}
+	
 }
 
 //------------------------------------------------------------------------------------
 // Все методы работы компьютера
 
 void Game::Computer_Action() {
-
-
+	Convert_Field_To_Dream_Field();
+	for (int i = 0; i < 3; i++) {
+		Cur_position_And_Eval[i] = 0;
+		Best_Position_And_Eval[i] = 0;
+	}
+	Clear_Tree(Root);
+	Root = Create_MiniMax_Tree(Root, 0, 1, Dream_Game_Field,0,0);
+	MiniMax(Root, 0);
+	Game_Field[Best_Position_And_Eval[0]][Best_Position_And_Eval[1]] = Opredelitel_Bot;
+	Takeover_Tockens(Opredelitel_Bot, Best_Position_And_Eval[0], Best_Position_And_Eval[1],Game_Field);
+	Adding_Place_To_Tockens(Opredelitel_Player, Game_Field);
+	Building_Objects_On_Array();
 }
 
 //------------------------------------------------------------------------------------
 // Проверка элемента массива на существование
 
-bool Game::Check_Massive_Elemetnt(int i, int j) {
+bool Game::Check_Massive_Elemetnt(int i, int j, int** Game_Field) {
 	if (i < 0 || i > 7 || j < 0 || j > 7) {
 		return false;
 	}
@@ -365,10 +380,10 @@ bool Game::Check_Massive_Elemetnt(int i, int j) {
 //------------------------------------------------------------------------------------
 // Перебор элементов по определённой линии
 
-void Game::Iterate_Elements_Massive_For_Line(int i, int j, int I, int J, int opredelitel) {
+void Game::Iterate_Elements_Massive_For_Line(int i, int j, int I, int J, int opredelitel, int** Game_Field) {
 	
 	int KI = i - I, KJ = j - J;
-	while (Check_Massive_Elemetnt(i+KI,j+KJ)) {
+	while (Check_Massive_Elemetnt(i+KI,j+KJ, Game_Field)) {
 		if (opredelitel == 1) {
 			if (Game_Field[i + KI][j + KJ] == 0) {
 				Game_Field[i + KI][j + KJ] = 3;
@@ -381,7 +396,7 @@ void Game::Iterate_Elements_Massive_For_Line(int i, int j, int I, int J, int opr
 				break;
 			}
 		}
-		if (Game_Field[i + KI][j + KJ] == opredelitel) {
+		if (Game_Field[i + KI][j + KJ] == opredelitel || Game_Field[i + KI][j + KJ] == 4 || Game_Field[i + KI][j + KJ] == 3) {
 			break;
 		}
 		i = i + KI;
@@ -392,71 +407,71 @@ void Game::Iterate_Elements_Massive_For_Line(int i, int j, int I, int J, int opr
 //------------------------------------------------------------------------------------
 // Переворот фишек в зависимости от хода
 
-void Game::Takeover_Tockens(int opredelitel, int i, int j) {
+void Game::Takeover_Tockens(int opredelitel, int i, int j, int** Game_Field) {
 
 	if (opredelitel == 1) {
-			if (Check_Massive_Elemetnt(i - 1, j - 1) == true && Game_Field[i - 1][j - 1] == 2  && Check_End_Of_Line(opredelitel, i-1, j-1, i, j) == true){
-				Change_Tockens_In_Massive(opredelitel, i - 1, j - 1, i, j);
+			if (Check_Massive_Elemetnt(i - 1, j - 1, Game_Field) == true && Game_Field[i - 1][j - 1] == 2  && Check_End_Of_Line(opredelitel, i-1, j-1, i, j, Game_Field) == true){
+				Change_Tockens_In_Massive(opredelitel, i - 1, j - 1, i, j, Game_Field);
 			}
-			if (Check_Massive_Elemetnt(i, j - 1) == true && Game_Field[i][j - 1] == 2 && Check_End_Of_Line(opredelitel, i, j - 1, i, j) == true) {
-				Change_Tockens_In_Massive(opredelitel, i, j - 1, i, j);
+			if (Check_Massive_Elemetnt(i, j - 1, Game_Field) == true && Game_Field[i][j - 1] == 2 && Check_End_Of_Line(opredelitel, i, j - 1, i, j, Game_Field) == true) {
+				Change_Tockens_In_Massive(opredelitel, i, j - 1, i, j, Game_Field);
 			}
-			if (Check_Massive_Elemetnt(i + 1, j - 1) == true && Game_Field[i + 1][j - 1] == 2 && Check_End_Of_Line(opredelitel, i + 1, j - 1, i, j) == true) {
-				Change_Tockens_In_Massive(opredelitel, i + 1, j - 1, i, j);
+			if (Check_Massive_Elemetnt(i + 1, j - 1, Game_Field) == true && Game_Field[i + 1][j - 1] == 2 && Check_End_Of_Line(opredelitel, i + 1, j - 1, i, j, Game_Field) == true) {
+				Change_Tockens_In_Massive(opredelitel, i + 1, j - 1, i, j, Game_Field);
 			}
-			if (Check_Massive_Elemetnt(i - 1, j) == true && Game_Field[i - 1][j] == 2 && Check_End_Of_Line(opredelitel, i - 1, j, i, j) == true) {
-				Change_Tockens_In_Massive(opredelitel, i - 1, j, i, j);
+			if (Check_Massive_Elemetnt(i - 1, j, Game_Field) == true && Game_Field[i - 1][j] == 2 && Check_End_Of_Line(opredelitel, i - 1, j, i, j, Game_Field) == true) {
+				Change_Tockens_In_Massive(opredelitel, i - 1, j, i, j, Game_Field);
 			}
-			if (Check_Massive_Elemetnt(i + 1, j) == true && Game_Field[i + 1][j] == 2 && Check_End_Of_Line(opredelitel, i + 1, j, i, j) == true) {
-				Change_Tockens_In_Massive(opredelitel, i + 1, j, i, j);
+			if (Check_Massive_Elemetnt(i + 1, j, Game_Field) == true && Game_Field[i + 1][j] == 2 && Check_End_Of_Line(opredelitel, i + 1, j, i, j, Game_Field) == true) {
+				Change_Tockens_In_Massive(opredelitel, i + 1, j, i, j, Game_Field);
 			}
-			if (Check_Massive_Elemetnt(i - 1, j + 1) == true && Game_Field[i - 1][j + 1] == 2 && Check_End_Of_Line(opredelitel, i - 1, j + 1, i, j) == true) {
-				Change_Tockens_In_Massive(opredelitel, i - 1, j + 1, i, j);
+			if (Check_Massive_Elemetnt(i - 1, j + 1, Game_Field) == true && Game_Field[i - 1][j + 1] == 2 && Check_End_Of_Line(opredelitel, i - 1, j + 1, i, j, Game_Field) == true) {
+				Change_Tockens_In_Massive(opredelitel, i - 1, j + 1, i, j, Game_Field);
 			}
-			if (Check_Massive_Elemetnt(i, j + 1) == true && Game_Field[i][j + 1] == 2 && Check_End_Of_Line(opredelitel, i, j + 1, i, j) == true) {
-				Change_Tockens_In_Massive(opredelitel, i, j + 1, i, j);
+			if (Check_Massive_Elemetnt(i, j + 1, Game_Field) == true && Game_Field[i][j + 1] == 2 && Check_End_Of_Line(opredelitel, i, j + 1, i, j, Game_Field) == true) {
+				Change_Tockens_In_Massive(opredelitel, i, j + 1, i, j, Game_Field);
 			}
-			if (Check_Massive_Elemetnt(i + 1, j + 1) == true && Game_Field[i + 1][j + 1] == 2 && Check_End_Of_Line(opredelitel, i + 1, j + 1, i, j) == true) {
-				Change_Tockens_In_Massive(opredelitel, i + 1, j + 1, i, j);
+			if (Check_Massive_Elemetnt(i + 1, j + 1, Game_Field) == true && Game_Field[i + 1][j + 1] == 2 && Check_End_Of_Line(opredelitel, i + 1, j + 1, i, j, Game_Field) == true) {
+				Change_Tockens_In_Massive(opredelitel, i + 1, j + 1, i, j, Game_Field);
 			}
 		}
 
 	if (opredelitel == 2) {
-		if (Check_Massive_Elemetnt(i - 1, j - 1) == true && Game_Field[i - 1][j - 1] == 1 && Check_End_Of_Line(opredelitel, i - 1, j - 1, i, j) == true) {
-			Change_Tockens_In_Massive(opredelitel, i - 1, j - 1, i, j);
+		if (Check_Massive_Elemetnt(i - 1, j - 1, Game_Field) == true && Game_Field[i - 1][j - 1] == 1 && Check_End_Of_Line(opredelitel, i - 1, j - 1, i, j, Game_Field) == true) {
+			Change_Tockens_In_Massive(opredelitel, i - 1, j - 1, i, j, Game_Field);
 		}
-		if (Check_Massive_Elemetnt(i, j - 1) == true && Game_Field[i][j - 1] == 1) {
-			Change_Tockens_In_Massive(opredelitel, i , j - 1, i, j);
+		if (Check_Massive_Elemetnt(i, j - 1, Game_Field) == true && Game_Field[i][j - 1] == 1 && Check_End_Of_Line(opredelitel, i, j - 1, i, j, Game_Field) == true) {
+			Change_Tockens_In_Massive(opredelitel, i , j - 1, i, j, Game_Field);
+		} 
+		if (Check_Massive_Elemetnt(i + 1, j - 1, Game_Field) == true && Game_Field[i + 1][j - 1] == 1 && Check_End_Of_Line(opredelitel, i + 1, j - 1, i, j, Game_Field) == true) {
+			Change_Tockens_In_Massive(opredelitel, i + 1, j - 1, i, j, Game_Field);
 		}
-		if (Check_Massive_Elemetnt(i + 1, j - 1) == true && Game_Field[i + 1][j - 1] == 1) {
-			Change_Tockens_In_Massive(opredelitel, i + 1, j - 1, i, j);
+		if (Check_Massive_Elemetnt(i - 1, j, Game_Field) == true && Game_Field[i - 1][j] == 1 && Check_End_Of_Line(opredelitel, i - 1, j, i, j, Game_Field) == true) {
+			Change_Tockens_In_Massive(opredelitel, i - 1, j, i, j, Game_Field);
 		}
-		if (Check_Massive_Elemetnt(i - 1, j) == true && Game_Field[i - 1][j] == 1) {
-			Change_Tockens_In_Massive(opredelitel, i - 1, j, i, j);
+		if (Check_Massive_Elemetnt(i + 1, j, Game_Field) == true && Game_Field[i + 1][j] == 1 && Check_End_Of_Line(opredelitel, i + 1, j , i, j, Game_Field) == true) {
+			Change_Tockens_In_Massive(opredelitel, i + 1, j, i, j, Game_Field);
 		}
-		if (Check_Massive_Elemetnt(i + 1, j) == true && Game_Field[i + 1][j] == 1) {
-			Change_Tockens_In_Massive(opredelitel, i + 1, j, i, j);
+		if (Check_Massive_Elemetnt(i - 1, j + 1, Game_Field) == true && Game_Field[i - 1][j + 1] == 1 && Check_End_Of_Line(opredelitel, i - 1, j + 1, i, j, Game_Field) == true) {
+			Change_Tockens_In_Massive(opredelitel, i - 1, j + 1, i, j, Game_Field);
 		}
-		if (Check_Massive_Elemetnt(i - 1, j + 1) == true && Game_Field[i - 1][j + 1] == 1) {
-			Change_Tockens_In_Massive(opredelitel, i - 1, j + 1, i, j);
+		if (Check_Massive_Elemetnt(i, j + 1, Game_Field) == true && Game_Field[i][j + 1] == 1 && Check_End_Of_Line(opredelitel, i , j + 1, i, j, Game_Field) == true) {
+			Change_Tockens_In_Massive(opredelitel, i , j + 1, i, j, Game_Field);
 		}
-		if (Check_Massive_Elemetnt(i, j + 1) == true && Game_Field[i][j + 1] == 1) {
-			Change_Tockens_In_Massive(opredelitel, i , j + 1, i, j);
-		}
-		if (Check_Massive_Elemetnt(i + 1, j + 1) == true && Game_Field[i + 1][j + 1] == 1) {
-			Change_Tockens_In_Massive(opredelitel, i + 1, j + 1, i, j);
+		if (Check_Massive_Elemetnt(i + 1, j + 1, Game_Field) == true && Game_Field[i + 1][j + 1] == 1 && Check_End_Of_Line(opredelitel, i + 1, j + 1, i, j, Game_Field) == true) {
+			Change_Tockens_In_Massive(opredelitel, i + 1, j + 1, i, j, Game_Field);
 		}
 	}
 }
 
 //------------------------------------------------------------------------------------
 // Проверка линии на ограничение фишкой 
-bool Game::Check_End_Of_Line(int opredelitel, int i, int j, int I, int J) {
+bool Game::Check_End_Of_Line(int opredelitel, int i, int j, int I, int J, int**Game_Field) {
 
 	int KI = i - I, KJ = j - J;
 
 	if (opredelitel == 1) {
-		while ((Check_Massive_Elemetnt(i + KI, j + KJ) == true && (Game_Field[i][j] == 2))) {
+		while ((Check_Massive_Elemetnt(i + KI, j + KJ, Game_Field) == true && (Game_Field[i][j] == 2))) {
 			if (Game_Field[i + KI][j + KJ] == opredelitel) {
 				return true;
 			}
@@ -466,7 +481,7 @@ bool Game::Check_End_Of_Line(int opredelitel, int i, int j, int I, int J) {
 	}
 
 	if (opredelitel == 2) {
-		while ((Check_Massive_Elemetnt(i + KI, j + KJ) == true && (Game_Field[i][j] == 1))) {
+		while ((Check_Massive_Elemetnt(i + KI, j + KJ, Game_Field) == true && (Game_Field[i][j] == 1))) {
 			if (Game_Field[i + KI][j + KJ] == opredelitel) {
 				return true;
 			}
@@ -477,7 +492,8 @@ bool Game::Check_End_Of_Line(int opredelitel, int i, int j, int I, int J) {
 	return false;
 }
 
-
+//------------------------------------------------------------------------------------
+// Из числа в строку
 
 void Game::Convert_Int_To_String(int i)
 {
@@ -487,12 +503,12 @@ void Game::Convert_Int_To_String(int i)
 //------------------------------------------------------------------------------------
 // Проверка линии на ограничение фишкой 
 
-void Game::Change_Tockens_In_Massive(int opredelitel, int i, int j, int I, int J){
+void Game::Change_Tockens_In_Massive(int opredelitel, int i, int j, int I, int J, int** Game_Field){
 
 	int KI = i - I, KJ = j - J;
 
 	if (opredelitel == 1) {
-		while (Check_Massive_Elemetnt(i, j) == true) {
+		while (Check_Massive_Elemetnt(i, j, Game_Field) == true) {
 			if (Game_Field[i][j] == 1) {
 				break;
 			}
@@ -505,7 +521,7 @@ void Game::Change_Tockens_In_Massive(int opredelitel, int i, int j, int I, int J
 	}
 
 	if (opredelitel == 2) {
-		while (Check_Massive_Elemetnt(i, j) == true) {
+		while (Check_Massive_Elemetnt(i, j, Game_Field) == true) {
 			if (Game_Field[i][j] == 2) {
 				break;
 			}
@@ -522,48 +538,49 @@ void Game::Change_Tockens_In_Massive(int opredelitel, int i, int j, int I, int J
 //------------------------------------------------------------------------------------
 // Оценочная функция 
 
-int Game::Evaluation(int opredelitel, int i, int j) {
+int Game::Evaluation(int opredelitel, int i, int j, int ** Game_Field) {
 	int Rating_Pos = 0;
-	Count_Tockens();
+	int Count_Repainting_Tock=0;
+	Count_Tockens(Game_Field);
 
 
-	if (Check_Massive_Elemetnt(i - 1, j - 1) == true && Game_Field[i - 1][j - 1] != opredelitel && Check_End_Of_Line(opredelitel, i - 1, j - 1, i, j) == true && Game_Field[i - 1][j - 1] != 3 && Game_Field[i - 1][j - 1] != 4 && Game_Field[i - 1][j - 1] != 0) {
-		Rating_Pos = Rating_Pos + Count_Repainting_Tockens(opredelitel, i - 1, j - 1, i, j);
+	if (Check_Massive_Elemetnt(i - 1, j - 1, Game_Field) == true && Game_Field[i - 1][j - 1] != opredelitel && Check_End_Of_Line(opredelitel, i - 1, j - 1, i, j, Game_Field) == true && Game_Field[i - 1][j - 1] != 3 && Game_Field[i - 1][j - 1] != 4 && Game_Field[i - 1][j - 1] != 0) {
+		Count_Repainting_Tock += Count_Repainting_Tockens(opredelitel, i - 1, j - 1, i, j);
 	}
-	if (Check_Massive_Elemetnt(i, j - 1) == true && Game_Field[i][j - 1] != opredelitel && Check_End_Of_Line(opredelitel, i, j - 1, i, j) == true && Game_Field[i][j - 1] != 3 && Game_Field[i][j - 1] != 4 && Game_Field[i][j - 1] != 0) {
-		Rating_Pos = Rating_Pos + Count_Repainting_Tockens(opredelitel, i, j - 1, i, j);
+	if (Check_Massive_Elemetnt(i, j - 1, Game_Field) == true && Game_Field[i][j - 1] != opredelitel && Check_End_Of_Line(opredelitel, i, j - 1, i, j, Game_Field) == true && Game_Field[i][j - 1] != 3 && Game_Field[i][j - 1] != 4 && Game_Field[i][j - 1] != 0) {
+		Count_Repainting_Tock +=  Count_Repainting_Tockens(opredelitel, i, j - 1, i, j);
 	}
-	if (Check_Massive_Elemetnt(i + 1, j - 1) == true && Game_Field[i + 1][j - 1] != opredelitel && Check_End_Of_Line(opredelitel, i + 1, j - 1, i, j) == true && Game_Field[i + 1][j - 1] != 3 && Game_Field[i + 1][j - 1] != 4 && Game_Field[i + 1][j - 1] != 0) {
-		Rating_Pos = Rating_Pos + Count_Repainting_Tockens(opredelitel, i + 1, j - 1, i, j);
-	}
-
-	if (Check_Massive_Elemetnt(i - 1, j) == true && Game_Field[i - 1][j] != opredelitel && Check_End_Of_Line(opredelitel, i - 1, j, i, j) == true && Game_Field[i - 1][j] != 3 && Game_Field[i - 1][j] != 4) {
-		Rating_Pos = Rating_Pos + Count_Repainting_Tockens(opredelitel, i - 1, j, i, j);
+	if (Check_Massive_Elemetnt(i + 1, j - 1, Game_Field) == true && Game_Field[i + 1][j - 1] != opredelitel && Check_End_Of_Line(opredelitel, i + 1, j - 1, i, j, Game_Field) == true && Game_Field[i + 1][j - 1] != 3 && Game_Field[i + 1][j - 1] != 4 && Game_Field[i + 1][j - 1] != 0) {
+		Count_Repainting_Tock += Count_Repainting_Tockens(opredelitel, i + 1, j - 1, i, j);
 	}
 
-	if (Check_Massive_Elemetnt(i + 1, j) == true && Game_Field[i + 1][j] != opredelitel && Check_End_Of_Line(opredelitel, i + 1, j, i, j) == true && Game_Field[i + 1][j] != 3 && Game_Field[i + 1][j] != 4) {
-		Rating_Pos = Rating_Pos + Count_Repainting_Tockens(opredelitel, i + 1, j, i, j);
+	if (Check_Massive_Elemetnt(i - 1, j, Game_Field) == true && Game_Field[i - 1][j] != opredelitel && Check_End_Of_Line(opredelitel, i - 1, j, i, j, Game_Field) == true && Game_Field[i - 1][j] != 3 && Game_Field[i - 1][j] != 4) {
+		Count_Repainting_Tock += Count_Repainting_Tockens(opredelitel, i - 1, j, i, j);
 	}
 
-	if (Check_Massive_Elemetnt(i - 1, j + 1) == true && Game_Field[i - 1][j + 1] != opredelitel && Check_End_Of_Line(opredelitel, i - 1, j + 1, i, j) == true && Game_Field[i - 1][j + 1] != 3 && Game_Field[i - 1][j + 1] != 4 && Game_Field[i - 1][j + 1] != 0) {
-		Rating_Pos = Rating_Pos + Count_Repainting_Tockens(opredelitel, i - 1, j + 1, i, j);
+	if (Check_Massive_Elemetnt(i + 1, j, Game_Field) == true && Game_Field[i + 1][j] != opredelitel && Check_End_Of_Line(opredelitel, i + 1, j, i, j, Game_Field) == true && Game_Field[i + 1][j] != 3 && Game_Field[i + 1][j] != 4) {
+		Count_Repainting_Tock += Count_Repainting_Tockens(opredelitel, i + 1, j, i, j);
 	}
-	if (Check_Massive_Elemetnt(i, j + 1) == true && Game_Field[i][j + 1] != opredelitel && Check_End_Of_Line(opredelitel, i, j + 1, i, j) == true && Game_Field[i][j + 1] != 3 && Game_Field[i][j + 1] != 4 && Game_Field[i][j + 1] != 0) {
-		Rating_Pos = Rating_Pos + Count_Repainting_Tockens(opredelitel, i, j + 1, i, j);
+
+	if (Check_Massive_Elemetnt(i - 1, j + 1, Game_Field) == true && Game_Field[i - 1][j + 1] != opredelitel && Check_End_Of_Line(opredelitel, i - 1, j + 1, i, j, Game_Field) == true && Game_Field[i - 1][j + 1] != 3 && Game_Field[i - 1][j + 1] != 4 && Game_Field[i - 1][j + 1] != 0) {
+		Count_Repainting_Tock += Count_Repainting_Tockens(opredelitel, i - 1, j + 1, i, j);
 	}
-	if (Check_Massive_Elemetnt(i + 1, j + 1) == true && Game_Field[i + 1][j + 1] != opredelitel && Check_End_Of_Line(opredelitel, i + 1, j + 1, i, j) == true && Game_Field[i + 1][j + 1] != 3 && Game_Field[i + 1][j + 1] != 4 && Game_Field[i + 1][j + 1] != 0) {
-		Rating_Pos = Rating_Pos + Count_Repainting_Tockens(opredelitel, i + 1, j + 1, i, j);
+	if (Check_Massive_Elemetnt(i, j + 1, Game_Field) == true && Game_Field[i][j + 1] != opredelitel && Check_End_Of_Line(opredelitel, i, j + 1, i, j, Game_Field) == true && Game_Field[i][j + 1] != 3 && Game_Field[i][j + 1] != 4 && Game_Field[i][j + 1] != 0) {
+		Count_Repainting_Tock += Count_Repainting_Tockens(opredelitel, i, j + 1, i, j);
+	}
+	if (Check_Massive_Elemetnt(i + 1, j + 1, Game_Field) == true && Game_Field[i + 1][j + 1] != opredelitel && Check_End_Of_Line(opredelitel, i + 1, j + 1, i, j, Game_Field) == true && Game_Field[i + 1][j + 1] != 3 && Game_Field[i + 1][j + 1] != 4 && Game_Field[i + 1][j + 1] != 0) {
+		Count_Repainting_Tock += Count_Repainting_Tockens(opredelitel, i + 1, j + 1, i, j);
 	}
 
 	if (Counts_Tocken_Black + Counts_Tocken_White >= 63) {
 		if (opredelitel == 1) {
-			Counts_Tocken_White += Rating_Pos/2;
-			Counts_Tocken_Black -= Rating_Pos / 2;
+			Counts_Tocken_White += Count_Repainting_Tock;
+			Counts_Tocken_Black -= Count_Repainting_Tock;
 		}
 
 		if (opredelitel == 2) {
-			Counts_Tocken_Black += Rating_Pos / 2;
-			Counts_Tocken_White -= Rating_Pos / 2;
+			Counts_Tocken_Black += Count_Repainting_Tock;
+			Counts_Tocken_White -= Count_Repainting_Tock;
 		}
 
 		if (Counts_Tocken_Black > Counts_Tocken_White) {
@@ -577,20 +594,22 @@ int Game::Evaluation(int opredelitel, int i, int j) {
 
 
 	if ((i == 0 || i == 7) && (j == 0 || j == 7)) {
-		Rating_Pos = Rating_Pos + 3;
+		Rating_Pos = Rating_Pos + 8;
 	}
 
 	else if (i == 0 || i == 7 || j == 0 || j == 7) {
-		Rating_Pos += 2;
+		Rating_Pos += 8;
 	}
 
-	if (opredelitel == Opredelitel_Bot) {
+	if (opredelitel == 2) {
 		Rating_Pos += 2 * (Counts_Tocken_Black - Counts_Tocken_White);
 	}
 	
-	if (opredelitel == Opredelitel_Player) {
+	if (opredelitel == 1) {
 		Rating_Pos += 2 * (Counts_Tocken_White - Counts_Tocken_Black);
 	}
+
+	Rating_Pos += 2 * Count_Repainting_Tock;
 
 	return Rating_Pos;
 }
@@ -603,7 +622,7 @@ int Game::Count_Repainting_Tockens(int opredelitel, int i, int j, int I, int J) 
 	float Count = 0;
 
 	if (opredelitel == 1) {
-		while ((Check_Massive_Elemetnt(i, j) == true && (Game_Field[i][j] == 2))) {
+		while ((Check_Massive_Elemetnt(i, j, Game_Field) == true && (Game_Field[i][j] == 2))) {
 			Count += 2;
 			i = i + KI;
 			j = j + KJ;
@@ -611,7 +630,7 @@ int Game::Count_Repainting_Tockens(int opredelitel, int i, int j, int I, int J) 
 	}
 
 	if (opredelitel == 2) {
-		while ((Check_Massive_Elemetnt(i, j) == true && (Game_Field[i][j] == 1))) {
+		while ((Check_Massive_Elemetnt(i, j, Game_Field) == true && (Game_Field[i][j] == 1))) {
 			Count += 2;
 			i = i + KI;
 			j = j + KJ;
@@ -661,17 +680,44 @@ int Game::Count_Repainting_Tockens(int opredelitel, int i, int j, int I, int J) 
 	
 }
 */
+
 //------------------------------------------------------------------------------------
 // Функция минимакс
 
+void Game::MiniMax(TreeMinMax* tree, int cur_lvl) {
+
+	if (tree != nullptr) {
+
+		if (cur_lvl == 1) {
+			Cur_position_And_Eval[0] = tree->Pos_I;
+			Cur_position_And_Eval[1] = tree->Pos_J;
+			Cur_position_And_Eval[2] = tree->Mark;
+		}
+
+		if (cur_lvl == 5) {
+			if (Best_Position_And_Eval[2] < tree->Mark) {
+				Best_Position_And_Eval[2] = tree->Mark;
+				if (Cur_position_And_Eval[0] != Best_Position_And_Eval[0] || Cur_position_And_Eval[1] != Best_Position_And_Eval[1]) {
+					Best_Position_And_Eval[0] = Cur_position_And_Eval[0];
+					Best_Position_And_Eval[1] = Cur_position_And_Eval[1];
+				}
+			}
+		}
+		
+		for (int i = 0; i < tree->Count_Sons; i++) {
+			MiniMax(tree->Array_Sons[i], cur_lvl + 1);
+		}
+	}
+
+}
 
 //------------------------------------------------------------------------------------
 // Перевод из возможного, придуманного поля в текущее игровое поле
 
-void Game::Convert_Invented_Field_To_Field() {
+void Game::Convert_Dream_Field_To_Field() {
 	for (int i = 0; i < 8; i++) {
 		for (int j = 0; j < 8; j++) {
-			// Game_Field[i][j] =tree->Invented_Game_Field[i][j];
+			 Game_Field[i][j] = Dream_Game_Field[i][j];
 		}
 	}
 
@@ -680,13 +726,97 @@ void Game::Convert_Invented_Field_To_Field() {
 //------------------------------------------------------------------------------------
 // Перевод из текущего игрового поля в возможное, придуманное поле
 
-void Game::Convert_Field_To_Invented_Field() {
+void Game::Convert_Field_To_Dream_Field() {
 	for (int i = 0; i < 8; i++) {
 		for (int j = 0; j < 8; j++) {
-			 //tree->Invented_Game_Field[i][j] = Game_Field[i][j];
+			 Dream_Game_Field[i][j] = Game_Field[i][j];
 		}
 	}
 }
 
+//------------------------------------------------------------------------------------
+// Создание дерева минимакса
+
+TreeMinMax* Game::Create_MiniMax_Tree(TreeMinMax* tree, int cur_lvl, int opredelitel, int** Field, int I, int J) {
+	
+	if (cur_lvl < 6 && Counts_Tocken_Black+Counts_Tocken_White < 64) {
+		tree = new TreeMinMax;
+		tree->opredelitel = opredelitel;
+		tree->Dream_Game_Field = new int* [8];
+		for (int i = 0; i < 8; i++) {
+			tree->Dream_Game_Field[i] = new int[8];
+		}
+
+		for (int i = 0; i < 8; i++) {
+			for (int j = 0; j < 8; j++) {
+				tree->Dream_Game_Field[i][j] = Field[i][j];
+				if (tree->Dream_Game_Field[i][j] == 3 || tree->Dream_Game_Field[i][j] == 4) {
+					tree->Dream_Game_Field[i][j] = 0;
+				}
+			}
+		}
+		
+		if (cur_lvl != 0) {
+			tree->Mark = Evaluation(tree->opredelitel, I, J, tree->Dream_Game_Field);
+			tree->Dream_Game_Field[I][J] = tree->opredelitel;
+			Takeover_Tockens(tree->opredelitel, I, J, tree->Dream_Game_Field);
+			tree->Pos_I = I;
+			tree->Pos_J = J;
+		}
+
+		Count_Tockens(tree->Dream_Game_Field);
+
+		if (tree->opredelitel == 1) {
+			opredelitel = 2;
+		}
+		else if (tree->opredelitel == 2) {
+			opredelitel = 1;
+		}
+
+		Adding_Place_To_Tockens(opredelitel,tree->Dream_Game_Field);
+		Count_Positions_For_Tockens(tree->Dream_Game_Field);
+		tree->Count_Sons = Count_position;
+		if (tree->Count_Sons == 0) {
+			return tree;
+		}
+		tree->Array_Sons = new TreeMinMax* [tree->Count_Sons];
+		tree->Cur_Son = 0;
+
+		//std::cout << tree->Mark << " " << tree->Count_Sons << " " << cur_lvl; 
+
+		if (cur_lvl == 5 || Counts_Tocken_Black+Counts_Tocken_White == 64) {
+			for (int i = 0; i < tree->Count_Sons; i++) {
+				tree->Array_Sons[i] = nullptr;
+			}
+		}
+		else {
+			for (int i = 0; i < 8; i++) {
+				for (int j = 0; j < 8; j++) {
+					if (tree->Dream_Game_Field[i][j] == 3 || tree->Dream_Game_Field[i][j] == 4) {
+						if (tree->Cur_Son < tree->Count_Sons) {
+							tree->Array_Sons[tree->Cur_Son] = Create_MiniMax_Tree(tree->Array_Sons[tree->Cur_Son], cur_lvl + 1, opredelitel,  tree->Dream_Game_Field, i, j);
+							tree->Cur_Son = tree->Cur_Son + 1;
+						}
+					}
+				}
+			}
+		}
+	}
+
+	return (tree);
+}
 
 
+void Game::Clear_Tree(TreeMinMax* tree) {
+
+	if (tree == nullptr) {
+		return;
+	}
+
+	for (int i = 0; i < tree->Count_Sons; i++) {
+		Clear_Tree(tree->Array_Sons[i]);
+	}
+
+	delete tree;
+
+}
