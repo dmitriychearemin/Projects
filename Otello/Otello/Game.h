@@ -27,8 +27,9 @@ private:
 	sf::Text text[2];
 	TreeMinMax* Root = nullptr;
 	int Koef = 150, Count_position=0, Max_lvl_Tree=0;
+	
 	int Opredelitel_Player = 1, Opredelitel_Bot = 2;										// определитель =1 то все варанты для фишки человека, если = 2 то для бота
-	int Cur_position_And_Eval[3], Best_Position_And_Eval[3];
+	int Cur_position_And_Eval[3], Best_Position_And_Eval[3], last_Eval = 0;
 
 public:
 	void Game_Cycle();
@@ -44,7 +45,7 @@ public:
 	void Add_Tocken_White(int x, int y);
 	void Computer_Action(); 
 	bool Check_Massive_Elemetnt(int i, int j, int**);
-	void Count_Tockens(int**);
+	int Count_Tockens(int**);
 	void Read_Field_File();
 	void Convert_Int_To_String(int);
 	bool Check_End_Of_Line(int opredelitel, int i, int j, int I, int J, int**);
