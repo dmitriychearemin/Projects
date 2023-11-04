@@ -16,7 +16,7 @@ class TreeMinMax {
 class Game {
 private:
 	std::string Tock_Count;
-	int Counts_Tocken_White = 2, Counts_Tocken_Black = 2, Summ_Tockens;									// Количество белых фишек и черных
+	int Counts_Tocken_White = 2, Counts_Tocken_Black = 2, Summ_Tockens;						// Количество белых фишек и черных
 	int WIDTH_Screen = 1000, Height_Screen = 1000;											// Разрешение экрана
 	int** Game_Field;																		// Игровое поле
 	int** Dream_Game_Field;

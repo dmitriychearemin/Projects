@@ -17,5 +17,5 @@ C:\Users\ivanr\OneDrive\Рабочий стол\Учебники и задачн
           [
               T=float
           ]
-C:\Users\ivanr\OneDrive\Рабочий стол\Учебники и задачники в унике\2курс\АСД\Лабораторные\Otello\Otello\Game_Realization.cpp(666,9): warning C4244: return: преобразование "float" в "int", возможна потеря данных
+C:\Users\ivanr\OneDrive\Рабочий стол\Учебники и задачники в унике\2курс\АСД\Лабораторные\Otello\Otello\Game_Realization.cpp(688,9): warning C4244: return: преобразование "float" в "int", возможна потеря данных
   Otello.vcxproj -> C:\Users\ivanr\OneDrive\Рабочий стол\Учебники и задачники в унике\2курс\АСД\Лабораторные\Otello\Otello\x64\Debug\Otello.exe

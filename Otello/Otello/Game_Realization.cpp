@@ -69,13 +69,13 @@ void Game::Game_Cycle() {
 		window.draw(Window);
 		window.draw(BackGr);
 		Count_Tockens(Game_Field);
-		if (k != false) {
+		//if (k != false) {
 			for (int i = 0; i < Count_position; i++) {
 				if (Positions[i].getPosition().x != 0) {
 					window.draw(Positions[i]);
 				}
 			}
-		}
+		//}
 
 		for (int i = 0; i < 64; i++) {
 			if (Tocken[i].getPosition().x != 0) {
@@ -380,11 +380,27 @@ void Game::Computer_Action() {
 	}
 
 	Clear_Tree(Root);
-	if ((64 - Count_Tockens(Game_Field))>=6) {
+	if ((64 - Count_Tockens(Game_Field)) >= 6) {
 		Max_lvl_Tree = 6;
 	}
 	else {
-		Max_lvl_Tree = 2;
+		Max_lvl_Tree = (64 - Count_Tockens(Game_Field));
+	}
+	if (Best_Position_And_Eval[0] == 0 && Best_Position_And_Eval[1] == 0) {
+		Adding_Place_To_Tockens(2, Game_Field);
+		for (int i = 0; i < 3; i++) {
+			for (int j = 0; j < 3; j++) {
+				if (Game_Field[i][j] == 4) {
+					if (Best_Position_And_Eval[2] < Evaluation(2, i, j, Game_Field) ){
+						Best_Position_And_Eval[2] = Evaluation(2, i, j, Game_Field);
+						Best_Position_And_Eval[0] = i;
+						Best_Position_And_Eval[1] = j;
+
+					}
+				}
+			}
+		}
+		
 	}
 	Root = Create_MiniMax_Tree(Root, 0, 1, Dream_Game_Field, 0, 0);
 	MiniMax(Root, 0);
@@ -628,6 +644,10 @@ int Game::Evaluation(int opredelitel, int i, int j, int** Game_Field) {
 		Rating_Pos += 8;
 	}
 
+	else if (i == 1 || i == 6 || j == 1 || j == 6) {
+		Rating_Pos -= 8;
+	}
+
 	if (opredelitel == 2) {
 		Rating_Pos += 2 * (Counts_Tocken_Black - Counts_Tocken_White);
 	}
@@ -635,6 +655,8 @@ int Game::Evaluation(int opredelitel, int i, int j, int** Game_Field) {
 	if (opredelitel == 1) {
 		Rating_Pos += 2 * (Counts_Tocken_White - Counts_Tocken_Black);
 	}
+
+
 
 	Rating_Pos += 2 * Count_Repainting_Tock;
 
@@ -720,15 +742,40 @@ void Game::MiniMax(TreeMinMax* tree, int cur_lvl) {
 			Cur_position_And_Eval[1] = tree->Pos_J;
 			Cur_position_And_Eval[2] = tree->Mark;
 		}
+		//Count_Tockens(tree->Dream_Game_Field);
 
+		/*if (tree->opredelitel == 2) {
+			if (Counts_Tocken_Black  < last_Eval) {
+				return;
+			}
+			
+		}
+		if (tree->opredelitel == 1) {
+			last_Eval = Counts_Tocken_White;
+		}
+		*/
 		if (cur_lvl == Max_lvl_Tree-1) {
-			if (Best_Position_And_Eval[2] < tree->Mark) {
-				Best_Position_And_Eval[2] = tree->Mark;
-				if (Cur_position_And_Eval[0] != Best_Position_And_Eval[0] || Cur_position_And_Eval[1] != Best_Position_And_Eval[1]) {
-					Best_Position_And_Eval[0] = Cur_position_And_Eval[0];
-					Best_Position_And_Eval[1] = Cur_position_And_Eval[1];
+			if (tree->opredelitel == 2) {
+				if (Best_Position_And_Eval[2] < tree->Mark) {
+					Best_Position_And_Eval[2] = tree->Mark;
+					if (Cur_position_And_Eval[0] != Best_Position_And_Eval[0] || Cur_position_And_Eval[1] != Best_Position_And_Eval[1]) {
+						Best_Position_And_Eval[0] = Cur_position_And_Eval[0];
+						Best_Position_And_Eval[1] = Cur_position_And_Eval[1];
+					}
+				}
+
+			}
+			
+			else if (tree->opredelitel == 1) {
+				if (Best_Position_And_Eval[2] > tree->Mark) {
+					Best_Position_And_Eval[2] = tree->Mark;
+					if (Cur_position_And_Eval[0] != Best_Position_And_Eval[0] || Cur_position_And_Eval[1] != Best_Position_And_Eval[1]) {
+						Best_Position_And_Eval[0] = Cur_position_And_Eval[0];
+						Best_Position_And_Eval[1] = Cur_position_And_Eval[1];
+					}
 				}
 			}
+			
 		}
 		
 		for (int i = 0; i < tree->Count_Sons; i++) {
@@ -813,23 +860,13 @@ TreeMinMax* Game::Create_MiniMax_Tree(TreeMinMax* tree, int cur_lvl, int opredel
 		tree->Cur_Son = 0;
 
 		//std::cout << tree->Mark << " " << tree->Count_Sons << " " << cur_lvl; 
-		if (tree->opredelitel == 2) {
-			if (tree->Mark < last_Eval) {
-				for (int i = 0; i < tree->Count_Sons; i++) {
-					tree->Array_Sons[i] = nullptr;
-				}
-				return tree;
-			}
-		}
-
-		if (tree->opredelitel == 2) {
-			last_Eval = Counts_Tocken_Black - Counts_Tocken_White;
-		}
+		
  
-		if (cur_lvl == Max_lvl_Tree-1 || Count_Tockens(tree->Dream_Game_Field) == 64) {
+		if (cur_lvl == Max_lvl_Tree-1 || tree->Mark == 9999 || tree->Mark == -9999){ //Count_Tockens(tree->Dream_Game_Field) == 64) {
 			for (int i = 0; i < tree->Count_Sons; i++) {
 				tree->Array_Sons[i] = nullptr;
 			}
+			
 			return tree;
 		}
 
@@ -858,9 +895,10 @@ void Game::Clear_Tree(TreeMinMax* tree) {
 	}
 
 	for (int i = 0; i < tree->Count_Sons; i++) {
+		
 		Clear_Tree(tree->Array_Sons[i]);
 	}
-
+	//std::cout << "Clear" << std::endl;
 	delete tree;
 
 }
