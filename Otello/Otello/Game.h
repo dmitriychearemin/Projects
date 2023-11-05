@@ -30,6 +30,7 @@ private:
 	
 	int Opredelitel_Player = 1, Opredelitel_Bot = 2;										// определитель =1 то все варанты для фишки человека, если = 2 то для бота
 	int Cur_position_And_Eval[3], Best_Position_And_Eval[3], last_Eval = 0;
+	int MIN=0, MAX=0;
 
 public:
 	void Game_Cycle();
@@ -39,9 +40,12 @@ public:
 	void Convert_Dream_Field_To_Field();
 	void Convert_Field_To_Dream_Field();
 	void MiniMax(TreeMinMax* tree, int cur_lvl);
+	//int  MiniMax(TreeMinMax* tree, int cur_lvl);
 	TreeMinMax* Create_MiniMax_Tree(TreeMinMax*, int cur_lvl, int opredelitel, int**, int, int);
 	void Building_Objects_On_Array();
 	int CovertIJ_to_I(int, int);
+	int Min_Pos_On_Curlvl(TreeMinMax* tree, int);
+	int Max_Pos_On_Curlvl(TreeMinMax* tree, int);
 	void Add_Tocken_White(int x, int y);
 	void Computer_Action(); 
 	bool Check_Massive_Elemetnt(int i, int j, int**);
