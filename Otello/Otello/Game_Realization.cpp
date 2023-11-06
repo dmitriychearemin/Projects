@@ -45,17 +45,17 @@ void Game::Game_Cycle() {
 			if (event.type == sf::Event::Closed)
 				window.close();
 
-			if (event.type == sf::Event::MouseButtonPressed) {
-				if (event.key.code == sf::Mouse::Left) {
-					if (k == true) {
+			if (k == true) {
+				if (event.type == sf::Event::MouseButtonPressed) {
+					if (event.key.code == sf::Mouse::Left) {
+						Adding_Place_To_Tockens(1, Game_Field);
 						Count_Positions_For_Tockens(Game_Field);
 						if (Count_position != 0) {
 							Add_Tocken_White(sf::Mouse::getPosition().x, sf::Mouse::getPosition().y);
-							
+
 						}
 						k = false;
 					}
-
 				}
 			}
 
@@ -95,6 +95,7 @@ void Game::Game_Cycle() {
 			
 			k = true;
 		}
+
 		if (Count_Tockens(Game_Field) == 64) {
 			if (Counts_Tocken_Black > Counts_Tocken_White) {
 				std::cout << " BOT WIN" << std::endl;
@@ -104,6 +105,9 @@ void Game::Game_Cycle() {
 				std::cout << " PLAYER WIN" << std::endl;
 			}
 			
+		}
+		if (Counts_Tocken_White == 0) {
+			std::cout << " BOT WIN" << std::endl;
 		}
 
 	}
@@ -387,15 +391,25 @@ void Game::Computer_Action() {
 		Max_lvl_Tree = 6;
 	}
 	else {
-		Max_lvl_Tree = 2;
+		Max_lvl_Tree = 64 - Count_Tockens(Game_Field);
 	}
 
 	
 
 	Root = Create_MiniMax_Tree(Root, 0, 1, Dream_Game_Field, 0, 0);
 	g = MiniMax(Root, 0);
-	//if (Best_Position_And_Eval[0] == 0 && Best_Position_And_Eval[1] == 0) {
+	
 		Adding_Place_To_Tockens(2, Game_Field);
+		Count_Positions_For_Tockens(Game_Field);
+		if (Count_position==1) {
+			for (int i = 0; i < 8; i++) {
+				for (int j = 0; j < 8; j++) {
+					if(Game_Field[i][j]==4){
+						Game_Field[i][j] = 2;
+					}
+				}
+			}
+		}
 		for (int i = 0; i < Root->Count_Sons ; i++) {
 			
 				if (Best_Position_And_Eval[2] < Root->Array_Sons[i]->Mark) {
@@ -405,8 +419,6 @@ void Game::Computer_Action() {
 
 				}
 		}
-			
-		//}
 	
 	Game_Field[Best_Position_And_Eval[0]][Best_Position_And_Eval[1]] = 2;
 	Takeover_Tockens(Opredelitel_Bot, Best_Position_And_Eval[0], Best_Position_And_Eval[1], Game_Field);
