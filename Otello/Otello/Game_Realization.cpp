@@ -106,6 +106,25 @@ void Game::Game_Cycle() {
 			}
 			
 		}
+
+		
+		Adding_Place_To_Tockens(1, Game_Field);
+		Count_Positions_For_Tockens(Game_Field);
+		if (Count_position==0) {
+			Adding_Place_To_Tockens(2, Game_Field);
+			Count_Positions_For_Tockens(Game_Field);
+			if (Count_position == 0) {
+				if (Counts_Tocken_Black > Counts_Tocken_White) {
+					std::cout << " BOT WIN" << std::endl;
+				}
+
+				else {
+					std::cout << " PLAYER WIN" << std::endl;
+				}
+			}
+		}
+		
+		
 		if (Counts_Tocken_White == 0) {
 			std::cout << " BOT WIN" << std::endl;
 		}
@@ -410,14 +429,27 @@ void Game::Computer_Action() {
 				}
 			}
 		}
-		for (int i = 0; i < Root->Count_Sons ; i++) {
-			
+		else {
+			for (int i = 0; i < Root->Count_Sons; i++) {
+
 				if (Best_Position_And_Eval[2] < Root->Array_Sons[i]->Mark) {
 					Best_Position_And_Eval[2] = Root->Array_Sons[i]->Mark;
 					Best_Position_And_Eval[0] = Root->Array_Sons[i]->Pos_I;
 					Best_Position_And_Eval[1] = Root->Array_Sons[i]->Pos_J;;
 
 				}
+			}
+		}
+		Adding_Place_To_Tockens(2, Game_Field);
+		if ((Best_Position_And_Eval[0] == 0 && Best_Position_And_Eval[1] == 0)) {
+			for (int i = 0; i < 8; i++) {
+				for (int j = 0; j < 8; j++) {
+					if (Game_Field[i][j] == 4) {
+						Game_Field[i][j] = 2;
+						break;
+					}
+				}
+			}
 		}
 	
 	Game_Field[Best_Position_And_Eval[0]][Best_Position_And_Eval[1]] = 2;
@@ -874,6 +906,9 @@ int Game::MiniMax(TreeMinMax* tree, int cur_lvl) {
 	return tree->Mark;
 }
 
+//-----------------------------------------------------------
+// Минимальная из оценок на следующем уровне
+
 int Game::Min_Pos_On_Curlvl(TreeMinMax* tree, int MIN) {
 
 	if (tree != nullptr) {
@@ -887,6 +922,9 @@ int Game::Min_Pos_On_Curlvl(TreeMinMax* tree, int MIN) {
 	}
 	return MIN;
 }
+
+//-----------------------------------------------------------
+// Максимальная из оценок на следующем уровне
 
 int Game::Max_Pos_On_Curlvl(TreeMinMax* tree, int MAX) {
 

@@ -1,21 +1,21 @@
 ﻿  Game_Realization.cpp
 C:\Users\ivanr\OneDrive\Рабочий стол\Учебники и задачники в унике\2курс\АСД\Лабораторные\Otello\Otello\Game_Realization.cpp(36,53): warning C4244: аргумент: преобразование "int" в "float", возможна потеря данных
 C:\Users\ivanr\OneDrive\Рабочий стол\Учебники и задачники в унике\2курс\АСД\Лабораторные\Otello\Otello\Game_Realization.cpp(36,34): warning C4244: аргумент: преобразование "int" в "float", возможна потеря данных
-C:\Users\ivanr\OneDrive\Рабочий стол\Учебники и задачники в унике\2курс\АСД\Лабораторные\Otello\Otello\Game_Realization.cpp(193,74): warning C4244: аргумент: преобразование "int" в "float", возможна потеря данных
-C:\Users\ivanr\OneDrive\Рабочий стол\Учебники и задачники в унике\2курс\АСД\Лабораторные\Otello\Otello\Game_Realization.cpp(193,50): warning C4244: аргумент: преобразование "int" в "float", возможна потеря данных
-C:\Users\ivanr\OneDrive\Рабочий стол\Учебники и задачники в унике\2курс\АСД\Лабораторные\Otello\Otello\Game_Realization.cpp(197,74): warning C4244: аргумент: преобразование "int" в "float", возможна потеря данных
-C:\Users\ivanr\OneDrive\Рабочий стол\Учебники и задачники в унике\2курс\АСД\Лабораторные\Otello\Otello\Game_Realization.cpp(197,50): warning C4244: аргумент: преобразование "int" в "float", возможна потеря данных
-C:\Users\ivanr\OneDrive\Рабочий стол\Учебники и задачники в унике\2курс\АСД\Лабораторные\Otello\Otello\Game_Realization.cpp(202,63): warning C4244: аргумент: преобразование "int" в "float", возможна потеря данных
-C:\Users\ivanr\OneDrive\Рабочий стол\Учебники и задачники в унике\2курс\АСД\Лабораторные\Otello\Otello\Game_Realization.cpp(202,39): warning C4244: аргумент: преобразование "int" в "float", возможна потеря данных
-C:\Users\ivanr\OneDrive\Рабочий стол\Учебники и задачники в унике\2курс\АСД\Лабораторные\Otello\Otello\Game_Realization.cpp(265,46): warning C4244: =: преобразование "T" в "int", возможна потеря данных
+C:\Users\ivanr\OneDrive\Рабочий стол\Учебники и задачники в унике\2курс\АСД\Лабораторные\Otello\Otello\Game_Realization.cpp(212,74): warning C4244: аргумент: преобразование "int" в "float", возможна потеря данных
+C:\Users\ivanr\OneDrive\Рабочий стол\Учебники и задачники в унике\2курс\АСД\Лабораторные\Otello\Otello\Game_Realization.cpp(212,50): warning C4244: аргумент: преобразование "int" в "float", возможна потеря данных
+C:\Users\ivanr\OneDrive\Рабочий стол\Учебники и задачники в унике\2курс\АСД\Лабораторные\Otello\Otello\Game_Realization.cpp(216,74): warning C4244: аргумент: преобразование "int" в "float", возможна потеря данных
+C:\Users\ivanr\OneDrive\Рабочий стол\Учебники и задачники в унике\2курс\АСД\Лабораторные\Otello\Otello\Game_Realization.cpp(216,50): warning C4244: аргумент: преобразование "int" в "float", возможна потеря данных
+C:\Users\ivanr\OneDrive\Рабочий стол\Учебники и задачники в унике\2курс\АСД\Лабораторные\Otello\Otello\Game_Realization.cpp(221,63): warning C4244: аргумент: преобразование "int" в "float", возможна потеря данных
+C:\Users\ivanr\OneDrive\Рабочий стол\Учебники и задачники в унике\2курс\АСД\Лабораторные\Otello\Otello\Game_Realization.cpp(221,39): warning C4244: аргумент: преобразование "int" в "float", возможна потеря данных
+C:\Users\ivanr\OneDrive\Рабочий стол\Учебники и задачники в унике\2курс\АСД\Лабораторные\Otello\Otello\Game_Realization.cpp(284,46): warning C4244: =: преобразование "T" в "int", возможна потеря данных
           with
           [
               T=float
           ]
-C:\Users\ivanr\OneDrive\Рабочий стол\Учебники и задачники в унике\2курс\АСД\Лабораторные\Otello\Otello\Game_Realization.cpp(266,46): warning C4244: =: преобразование "T" в "int", возможна потеря данных
+C:\Users\ivanr\OneDrive\Рабочий стол\Учебники и задачники в унике\2курс\АСД\Лабораторные\Otello\Otello\Game_Realization.cpp(285,46): warning C4244: =: преобразование "T" в "int", возможна потеря данных
           with
           [
               T=float
           ]
-C:\Users\ivanr\OneDrive\Рабочий стол\Учебники и задачники в унике\2курс\АСД\Лабораторные\Otello\Otello\Game_Realization.cpp(766,9): warning C4244: return: преобразование "float" в "int", возможна потеря данных
+C:\Users\ivanr\OneDrive\Рабочий стол\Учебники и задачники в унике\2курс\АСД\Лабораторные\Otello\Otello\Game_Realization.cpp(798,9): warning C4244: return: преобразование "float" в "int", возможна потеря данных
   Otello.vcxproj -> C:\Users\ivanr\OneDrive\Рабочий стол\Учебники и задачники в унике\2курс\АСД\Лабораторные\Otello\Otello\x64\Debug\Otello.exe
