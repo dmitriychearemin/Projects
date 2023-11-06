@@ -39,8 +39,8 @@ public:
 	void Create_Tockens();
 	void Convert_Dream_Field_To_Field();
 	void Convert_Field_To_Dream_Field();
-	void MiniMax(TreeMinMax* tree, int cur_lvl);
-	//int  MiniMax(TreeMinMax* tree, int cur_lvl);
+	//void MiniMax(TreeMinMax* tree, int cur_lvl);
+	int  MiniMax(TreeMinMax* tree, int cur_lvl);
 	TreeMinMax* Create_MiniMax_Tree(TreeMinMax*, int cur_lvl, int opredelitel, int**, int, int);
 	void Building_Objects_On_Array();
 	int CovertIJ_to_I(int, int);

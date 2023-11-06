@@ -48,7 +48,6 @@ void Game::Game_Cycle() {
 			if (event.type == sf::Event::MouseButtonPressed) {
 				if (event.key.code == sf::Mouse::Left) {
 					if (k == true) {
-						Adding_Place_To_Tockens(1, Game_Field);
 						Count_Positions_For_Tockens(Game_Field);
 						if (Count_position != 0) {
 							Add_Tocken_White(sf::Mouse::getPosition().x, sf::Mouse::getPosition().y);
@@ -70,7 +69,7 @@ void Game::Game_Cycle() {
 		window.draw(Window);
 		window.draw(BackGr);
 		Count_Tockens(Game_Field);
-		Adding_Place_To_Tockens(1, Game_Field);
+		
 		for (int i = 0; i < Count_position; i++) {
 			if (Positions[i].getPosition().x != 0) {
 				window.draw(Positions[i]);				
@@ -376,8 +375,11 @@ void Game::Computer_Action() {
 	Convert_Field_To_Dream_Field();
 	for (int i = 0; i < 3; i++) {
 		Cur_position_And_Eval[i] = 0;
-		Best_Position_And_Eval[i] = 0;
+		
 	}
+	Best_Position_And_Eval[2] = -9999;
+	Best_Position_And_Eval[0] = 0;
+	Best_Position_And_Eval[1] = 0;
 	int g = 0;
 	Clear_Tree(Root);
 
@@ -388,27 +390,25 @@ void Game::Computer_Action() {
 		Max_lvl_Tree = 2;
 	}
 
-	if ((Game_Field[0][0] ==2 || Game_Field[0][0]==1) && Best_Position_And_Eval[0] == 0 && Best_Position_And_Eval[1] == 0) {
-		Adding_Place_To_Tockens(2, Game_Field);
-		for (int i = 0; i < 3; i++) {
-			for (int j = 0; j < 3; j++) {
-				if (Game_Field[i][j] == 4) {
-					if (Best_Position_And_Eval[2] < Evaluation(2, i, j, Game_Field) ){
-						Best_Position_And_Eval[2] = Evaluation(2, i, j, Game_Field);
-						Best_Position_And_Eval[0] = i;
-						Best_Position_And_Eval[1] = j;
-
-					}
-				}
-			}
-		}
-		
-	}
+	
 
 	Root = Create_MiniMax_Tree(Root, 0, 1, Dream_Game_Field, 0, 0);
-	MiniMax(Root, 0);
+	g = MiniMax(Root, 0);
+	//if (Best_Position_And_Eval[0] == 0 && Best_Position_And_Eval[1] == 0) {
+		Adding_Place_To_Tockens(2, Game_Field);
+		for (int i = 0; i < Root->Count_Sons ; i++) {
+			
+				if (Best_Position_And_Eval[2] < Root->Array_Sons[i]->Mark) {
+					Best_Position_And_Eval[2] = Root->Array_Sons[i]->Mark;
+					Best_Position_And_Eval[0] = Root->Array_Sons[i]->Pos_I;
+					Best_Position_And_Eval[1] = Root->Array_Sons[i]->Pos_J;;
 
-	Game_Field[Best_Position_And_Eval[0]][Best_Position_And_Eval[1]] = Opredelitel_Bot;
+				}
+		}
+			
+		//}
+	
+	Game_Field[Best_Position_And_Eval[0]][Best_Position_And_Eval[1]] = 2;
 	Takeover_Tockens(Opredelitel_Bot, Best_Position_And_Eval[0], Best_Position_And_Eval[1], Game_Field);
 	Adding_Place_To_Tockens(Opredelitel_Player, Game_Field);
 	Building_Objects_On_Array();
@@ -590,15 +590,15 @@ int Game::Evaluation(int opredelitel, int i, int j, int** Game_Field) {
 	int Count_Repainting_Tock = 0;
 	Count_Tockens(Game_Field);
 
-	if (opredelitel==2) {
-		Rating_Pos = Counts_Tocken_Black - Counts_Tocken_White;
-	}
-
 	if (opredelitel == 2) {
-		Rating_Pos = Counts_Tocken_White - Counts_Tocken_Black;
+		Rating_Pos = (Counts_Tocken_Black - Counts_Tocken_White);
 	}
 
-	if (Counts_Tocken_Black + Counts_Tocken_White >= 63) {
+	if (opredelitel == 1) {
+		Rating_Pos = (Counts_Tocken_Black - Counts_Tocken_White);
+	}
+
+	if (Counts_Tocken_Black + Counts_Tocken_White == 64) {
 
 		if (Counts_Tocken_Black > Counts_Tocken_White) {
 			return 9999;
@@ -610,18 +610,28 @@ int Game::Evaluation(int opredelitel, int i, int j, int** Game_Field) {
 
 	for (int i = 0; i < 8; i++) {
 		for (int j = 0; j < 8; j++) {
-			if(Game_Field[i][j]==opredelitel)
-			if ((i == 0 || i == 7) && (j == 0 || j == 7)) {
-				Rating_Pos = Rating_Pos + 3;
-			}
+			if (Game_Field[i][j] == opredelitel)
+				if ((i == 0 || i == 7) && (j == 0 || j == 7)) {
+					if (opredelitel == 1) {
+						Rating_Pos = Rating_Pos - 2;
+					}
+					else {
+						Rating_Pos = Rating_Pos + 2;
+					}
+				}
 		}
 	}
-	
+
 	for (int i = 0; i < 8; i++) {
 		for (int j = 0; j < 8; j++) {
 			if (Game_Field[i][j] == opredelitel)
 				if (i == 0 || i == 7 || j == 0 || j == 7) {
-					Rating_Pos = Rating_Pos + 3;
+					if (opredelitel == 1) {
+						Rating_Pos = Rating_Pos -1;
+					}
+					else {
+						Rating_Pos = Rating_Pos + 1;
+					}
 				}
 		}
 	}
@@ -680,24 +690,24 @@ int Game::Evaluation(int opredelitel, int i, int j, int** Game_Field) {
 
 	if ((i == 0 || i == 7) && (j == 0 || j == 7)) {
 		/*if (opredelitel == 2) {
-			
+
 		}
 		else {
 			Rating_Pos = Rating_Pos - 8;
 		}
-		
+
 		Rating_Pos = Rating_Pos + 8;
 	}
 
 	else if (i == 0 || i == 7 || j == 0 || j == 7) {
 		Rating_Pos = Rating_Pos - 8;
-		
+
 	}
 
 	/*else if (i == 1 || i == 6 || j == 1 || j == 6) {
 		Rating_Pos -= 8;
 	}
-	
+
 	if (opredelitel == 2) {
 		Rating_Pos += 2 * (Counts_Tocken_Black - Counts_Tocken_White);
 	}
@@ -706,11 +716,11 @@ int Game::Evaluation(int opredelitel, int i, int j, int** Game_Field) {
 		Rating_Pos += 2 * (Counts_Tocken_White - Counts_Tocken_Black);
 	}
 
-	
+
 	if (opredelitel == 1) {
 		Rating_Pos -= 2 * Count_Repainting_Tock;
 	}
-	
+
 	if(opredelitel == 2) {
 		Rating_Pos += 2 * Count_Repainting_Tock;
 	}
@@ -789,7 +799,7 @@ int Game::Count_Repainting_Tockens(int opredelitel, int i, int j, int I, int J) 
 //------------------------------------------------------------------------------------
 // Функция минимакс
 
-void Game::MiniMax(TreeMinMax* tree, int cur_lvl) {
+/*void Game::MiniMax(TreeMinMax* tree, int cur_lvl) {
 
 	if (tree != nullptr) {
 
@@ -798,21 +808,18 @@ void Game::MiniMax(TreeMinMax* tree, int cur_lvl) {
 			Cur_position_And_Eval[1] = tree->Pos_J;
 			Cur_position_And_Eval[2] = tree->Mark;
 		}
+
 		Count_Tockens(tree->Dream_Game_Field);
 
-		
-		if (cur_lvl == Max_lvl_Tree-1) {
+
+		if (cur_lvl == Max_lvl_Tree - 1) {
 			if (tree->opredelitel == 2) {
 				if (Best_Position_And_Eval[2] < tree->Mark) {
 					Best_Position_And_Eval[2] = tree->Mark;
-					if (Cur_position_And_Eval[0] != Best_Position_And_Eval[0] || Cur_position_And_Eval[1] != Best_Position_And_Eval[1]) {
-						Best_Position_And_Eval[0] = Cur_position_And_Eval[0];
-						Best_Position_And_Eval[1] = Cur_position_And_Eval[1];
-					}
+					Best_Position_And_Eval[0] = Cur_position_And_Eval[0];
+					Best_Position_And_Eval[1] = Cur_position_And_Eval[1];
 				}
-
 			}
-			
 		}
 		
 		for (int i = 0; i < tree->Count_Sons; i++) {
@@ -822,7 +829,38 @@ void Game::MiniMax(TreeMinMax* tree, int cur_lvl) {
 	}
 
 }
+*/
 
+int Game::MiniMax(TreeMinMax* tree, int cur_lvl) {
+	if (tree != nullptr) {
+		if (tree->Mark == 9999 || tree->Mark == -9999 || cur_lvl == Max_lvl_Tree) {
+			return tree->Mark;
+		}
+
+		if (cur_lvl > 0) {
+			if (tree->opredelitel == 1) {
+				int Min = 9999;
+				for (int i = 0; i < tree->Count_Sons; i++) {
+					MiniMax(tree->Array_Sons[i], cur_lvl + 1);
+				}
+
+				tree->Mark = Min_Pos_On_Curlvl(tree, Min);
+
+			}
+
+			if (tree->opredelitel == 2) {
+				int Max = -9999;
+				for (int i = 0; i < tree->Count_Sons; i++) {
+					MiniMax(tree->Array_Sons[i], cur_lvl + 1);
+				}
+				tree->Mark = Max_Pos_On_Curlvl(tree, Max);
+			}
+		}
+
+	}
+
+	return tree->Mark;
+}
 
 int Game::Min_Pos_On_Curlvl(TreeMinMax* tree, int MIN) {
 
@@ -842,7 +880,7 @@ int Game::Max_Pos_On_Curlvl(TreeMinMax* tree, int MAX) {
 
 	if (tree != nullptr) {
 		for (int i = 0; i < tree->Count_Sons; i++) {
-			if (MAX > tree->Array_Sons[i]->Mark) {
+			if (MAX < tree->Array_Sons[i]->Mark) {
 				MAX = tree->Array_Sons[i]->Mark;
 				Best_Position_And_Eval[0] = tree->Array_Sons[i]->Pos_I;
 				Best_Position_And_Eval[1] = tree->Array_Sons[i]->Pos_J;
@@ -899,15 +937,15 @@ TreeMinMax* Game::Create_MiniMax_Tree(TreeMinMax* tree, int cur_lvl, int opredel
 		}
 
 		if (cur_lvl != 0) {
-			tree->Mark = Evaluation(tree->opredelitel, I, J, tree->Dream_Game_Field);
 			tree->Dream_Game_Field[I][J] = tree->opredelitel;
 			Takeover_Tockens(tree->opredelitel, I, J, tree->Dream_Game_Field);
 			tree->Pos_I = I;
 			tree->Pos_J = J;
-			Count_Tockens(tree->Dream_Game_Field);
+			tree->Mark = Evaluation(tree->opredelitel, I, J, tree->Dream_Game_Field);
+			
 		}
 
-		
+		Count_Tockens(tree->Dream_Game_Field);
 		if (tree->opredelitel == 1) {
 			opredelitel = 2;
 		}
