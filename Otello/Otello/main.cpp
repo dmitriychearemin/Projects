@@ -7,8 +7,8 @@
 int main()
 {
 	Game G;
-	G.Game_Cycle();
+	//G.Game_Cycle();
 	//G.Read_Field_File();
-
+	G.Menu_Cycle();
 
 }

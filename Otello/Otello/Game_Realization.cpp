@@ -4,11 +4,13 @@
 #include <fstream>
 #include <stdlib.h>
 
+
 //------------------------------------------------------------------------------------
 // Игровой цикл
 
 void Game::Game_Cycle() {
 	bool k = true;
+	int count = 0;
 	sf::RenderWindow window(sf::VideoMode(WIDTH_Screen, Height_Screen), "Otello");
 	sf::Clock clock;
 	int a = 0;
@@ -50,12 +52,10 @@ void Game::Game_Cycle() {
 					if (event.key.code == sf::Mouse::Left) {
 						Adding_Place_To_Tockens(1, Game_Field);
 						Count_Positions_For_Tockens(Game_Field);
-						if (Count_position != 0) {
-							Add_Tocken_White(sf::Mouse::getPosition().x, sf::Mouse::getPosition().y);
-
-						}
+						Add_Tocken_White(sf::Mouse::getPosition().x, sf::Mouse::getPosition().y);
 						k = false;
 					}
+						
 				}
 			}
 
@@ -68,8 +68,9 @@ void Game::Game_Cycle() {
 
 		window.draw(Window);
 		window.draw(BackGr);
+		Adding_Place_To_Tockens(1, Game_Field);
 		Count_Tockens(Game_Field);
-		
+		Building_Objects_On_Array();
 		for (int i = 0; i < Count_position; i++) {
 			if (Positions[i].getPosition().x != 0) {
 				window.draw(Positions[i]);				
@@ -99,11 +100,18 @@ void Game::Game_Cycle() {
 		if (Count_Tockens(Game_Field) == 64) {
 			if (Counts_Tocken_Black > Counts_Tocken_White) {
 				std::cout << " BOT WIN" << std::endl;
+				text[0].setFont(font);
 			}
 
 			else {
 				std::cout << " PLAYER WIN" << std::endl;
 			}
+			count++;
+			if (count > 10) {
+				End_Game_Menu();
+				break;
+			}
+			
 			
 		}
 
@@ -121,15 +129,162 @@ void Game::Game_Cycle() {
 				else {
 					std::cout << " PLAYER WIN" << std::endl;
 				}
+				count++;
+				if (count > 10) {
+					End_Game_Menu();
+					break;
+				}
 			}
 		}
-		
-		
+		Count_Tockens(Game_Field);
 		if (Counts_Tocken_White == 0) {
 			std::cout << " BOT WIN" << std::endl;
+			count++;
+			if (count > 10) {
+				End_Game_Menu();
+				break;
+			}
 		}
 
 	}
+}
+
+//----------------------------------------------------
+// 
+void Game::Menu_Cycle() {
+	int position_X, position_Y;
+
+	sf::RenderWindow window(sf::VideoMode(WIDTH_Screen, Height_Screen), "Otello");
+	sf::RectangleShape BackGr(sf::Vector2f(1000, 1000));
+	sf::Texture Menu_BackGround;
+	sf::RectangleShape Start_Button(sf::Vector2f(300, 70));
+	sf::Texture Start_But_Texture;
+	sf::RectangleShape Guide_Button(sf::Vector2f(300, 70));
+	sf::Texture Guide_But_Texture;
+
+	Menu_BackGround.loadFromFile("Menu_Backgr.PNG");
+	BackGr.setOrigin(500,500);
+	BackGr.setPosition(WIDTH_Screen / 2, Height_Screen / 2);
+	BackGr.setTexture(&Menu_BackGround);
+
+	Start_But_Texture.loadFromFile("Play_Button.PNG");
+	Start_Button.setOrigin(150, 35);
+	Start_Button.setPosition(WIDTH_Screen / 2, Height_Screen / 2);
+	Start_Button.setTexture(&Start_But_Texture);
+
+	Guide_But_Texture.loadFromFile("Guide_Button.PNG");
+	Guide_Button.setOrigin(150, 35);
+	Guide_Button.setPosition(WIDTH_Screen / 2, Height_Screen / 2 + 100);
+	Guide_Button.setTexture(&Guide_But_Texture);
+
+	sf::Vector2i localPosition = sf::Mouse::getPosition(window);
+
+	while (window.isOpen())
+	{
+
+		sf::Event event;
+		while (window.pollEvent(event))
+		{
+			if (event.type == sf::Event::Closed)
+				window.close();
+
+			if (event.type == sf::Event::MouseButtonPressed) {
+				if (event.key.code == sf::Mouse::Left) {
+					position_X = sf::Mouse::getPosition().x - 468;
+					position_Y = sf::Mouse::getPosition().y - 76;
+					std::cout << position_X << " " << position_Y << std::endl;
+					if (position_X >= 350 && position_X <= 650 && position_Y >= 465 && position_Y <= 535) {
+						Game_Cycle();
+					}
+					if (position_X >= 350 && position_X <= 650 && position_Y >= 565 && position_Y <= 635) {
+						Tutorial_Cycle();
+					}
+
+				}
+
+			}
+		}
+		window.draw(BackGr);
+		window.draw(Start_Button);
+		window.draw(Guide_Button);
+		window.display();
+
+	}
+	
+}
+
+void Game::Tutorial_Cycle() {
+	sf::RenderWindow window(sf::VideoMode(WIDTH_Screen, Height_Screen), "Otello");
+	sf::RectangleShape BackGr(sf::Vector2f(1000, 1000));
+	sf::Texture Guide_Menu_BackGround;
+	Guide_Menu_BackGround.loadFromFile("Guide_Menu_Backgr.PNG");
+	BackGr.setOrigin(500, 500);
+	
+	
+	BackGr.setPosition(WIDTH_Screen / 2, Height_Screen / 2);
+	BackGr.setTexture(&Guide_Menu_BackGround);
+	while (window.isOpen())
+	{
+
+		sf::Event event;
+		while (window.pollEvent(event))
+		{
+			if (event.type == sf::Event::Closed)
+				window.close();
+
+
+
+		}
+		window.draw(BackGr);
+		window.display();
+
+	}
+
+}
+
+void Game::End_Game_Menu() {
+
+	sf::RenderWindow window(sf::VideoMode(WIDTH_Screen, Height_Screen), "Otello");
+	sf::RectangleShape BackGr(sf::Vector2f(1000, 1000));
+	sf::Texture End_Menu_BackGround;
+	End_Menu_BackGround.loadFromFile("Menu_Backgr.PNG");
+	BackGr.setOrigin(500, 500);
+
+	text[0].setCharacterSize(100);
+	text[0].setFillColor(sf::Color::Red);
+	text[0].setStyle(sf::Text::Bold | sf::Text::Style::Bold);
+	text[0].setPosition(250,500);
+	Count_Tockens(Game_Field);
+
+	if (Counts_Tocken_Black > Counts_Tocken_White) {
+		text[0].setString("Bot Win");
+
+	}
+	else {
+		text[0].setString("Player Win");
+	}
+
+	BackGr.setPosition(WIDTH_Screen / 2, Height_Screen / 2);
+	BackGr.setTexture(&End_Menu_BackGround);
+	while (window.isOpen())
+	{
+
+		sf::Event event;
+		while (window.pollEvent(event))
+		{
+			if (event.type == sf::Event::Closed)
+				window.close();
+
+
+
+		}
+		window.draw(BackGr);
+		window.draw(text[0]);
+		window.display();
+
+	}
+
+
 }
 
 //------------------------------------------------------------------------------------
@@ -440,20 +595,24 @@ void Game::Computer_Action() {
 				}
 			}
 		}
+
 		Adding_Place_To_Tockens(2, Game_Field);
 		if ((Best_Position_And_Eval[0] == 0 && Best_Position_And_Eval[1] == 0)) {
 			for (int i = 0; i < 8; i++) {
 				for (int j = 0; j < 8; j++) {
 					if (Game_Field[i][j] == 4) {
 						Game_Field[i][j] = 2;
+						Takeover_Tockens(Opredelitel_Bot, i, j, Game_Field);
 						break;
 					}
 				}
 			}
 		}
-	
-	Game_Field[Best_Position_And_Eval[0]][Best_Position_And_Eval[1]] = 2;
-	Takeover_Tockens(Opredelitel_Bot, Best_Position_And_Eval[0], Best_Position_And_Eval[1], Game_Field);
+		else {
+			Game_Field[Best_Position_And_Eval[0]][Best_Position_And_Eval[1]] = 2;
+			Takeover_Tockens(Opredelitel_Bot, Best_Position_And_Eval[0], Best_Position_And_Eval[1], Game_Field);
+		}
+
 	Adding_Place_To_Tockens(Opredelitel_Player, Game_Field);
 	Building_Objects_On_Array();
 }
@@ -657,10 +816,10 @@ int Game::Evaluation(int opredelitel, int i, int j, int** Game_Field) {
 			if (Game_Field[i][j] == opredelitel)
 				if ((i == 0 || i == 7) && (j == 0 || j == 7)) {
 					if (opredelitel == 1) {
-						Rating_Pos = Rating_Pos - 2;
+						Rating_Pos = Rating_Pos - 3;
 					}
 					else {
-						Rating_Pos = Rating_Pos + 2;
+						Rating_Pos = Rating_Pos + 3;
 					}
 				}
 		}
@@ -671,10 +830,10 @@ int Game::Evaluation(int opredelitel, int i, int j, int** Game_Field) {
 			if (Game_Field[i][j] == opredelitel)
 				if (i == 0 || i == 7 || j == 0 || j == 7) {
 					if (opredelitel == 1) {
-						Rating_Pos = Rating_Pos -1;
+						Rating_Pos = Rating_Pos -2;
 					}
 					else {
-						Rating_Pos = Rating_Pos + 1;
+						Rating_Pos = Rating_Pos + 2;
 					}
 				}
 		}

@@ -37,6 +37,9 @@ public:
 	void Create_Field();
 	void Count_Positions_For_Tockens(int**);
 	void Create_Tockens();
+	void Tutorial_Cycle();
+	void Menu_Cycle();
+	void End_Game_Menu();
 	void Convert_Dream_Field_To_Field();
 	void Convert_Field_To_Dream_Field();
 	//void MiniMax(TreeMinMax* tree, int cur_lvl);
