@@ -71,6 +71,7 @@ void Game::Game_Cycle() {
 		Adding_Place_To_Tockens(1, Game_Field);
 		Count_Tockens(Game_Field);
 		Building_Objects_On_Array();
+
 		for (int i = 0; i < Count_position; i++) {
 			if (Positions[i].getPosition().x != 0) {
 				window.draw(Positions[i]);				
@@ -297,6 +298,10 @@ void Game::Create_Field() {
 	for (int i = 0; i < 8; i++) {
 		Game_Field[i] = new int[8];
 		Dream_Game_Field[i] = new int[8];
+	}
+
+	for (int i = 0; i < 64; i++) {
+		Tocken[i].setPosition(0, 0);
 	}
 
 	for (int i = 0; i < 8; i++) {
@@ -580,6 +585,7 @@ void Game::Computer_Action() {
 				for (int j = 0; j < 8; j++) {
 					if(Game_Field[i][j]==4){
 						Game_Field[i][j] = 2;
+						Takeover_Tockens(Opredelitel_Bot, i, j, Game_Field);
 					}
 				}
 			}
@@ -809,6 +815,13 @@ int Game::Evaluation(int opredelitel, int i, int j, int** Game_Field) {
 		if (Counts_Tocken_Black <= Counts_Tocken_White) {
 			return -9999;
 		}
+	}
+
+	if (Counts_Tocken_Black == 0) {
+		return -9999;
+	}
+	if (Counts_Tocken_White == 0) {
+		return 9999;
 	}
 
 	for (int i = 0; i < 8; i++) {
