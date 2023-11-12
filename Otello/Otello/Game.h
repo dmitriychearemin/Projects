@@ -43,7 +43,7 @@ public:
 	void Convert_Dream_Field_To_Field();
 	void Convert_Field_To_Dream_Field();
 	//void MiniMax(TreeMinMax* tree, int cur_lvl);
-	int  MiniMax(TreeMinMax* tree, int cur_lvl);
+	int  MiniMax(int cur_lvl, int I, int J, int** Field, int);
 	TreeMinMax* Create_MiniMax_Tree(TreeMinMax*, int cur_lvl, int opredelitel, int**, int, int);
 	void Building_Objects_On_Array();
 	int CovertIJ_to_I(int, int);
@@ -57,8 +57,10 @@ public:
 	void Convert_Int_To_String(int);
 	bool Check_End_Of_Line(int opredelitel, int i, int j, int I, int J, int**);
 	void Change_Tockens_In_Massive(int opredelitel, int i, int j, int I, int J, int**);
+	void Reverse_Change_Tockens_In_Massive(int opredelitel, int i, int j, int I, int J, int**);
 	void Takeover_Tockens(int opredelitel, int i, int j, int**);
-	int Evaluation(int opredelitel, int i, int j, int**);
+	void Reverse_Takeover_Tockens(int opredelitel, int i, int j, int**);
+	int Evaluation(int**);
 	int Count_Repainting_Tockens(int opredelitel, int i, int j, int I, int J);
 	void Iterate_Elements_Massive_For_Line(int i, int j, int I, int J, int opredelitel, int**);
 	void Adding_Place_To_Tockens(int Opredelitel, int**);   
