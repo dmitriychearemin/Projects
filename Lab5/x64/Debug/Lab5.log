@@ -1,2 +1,5 @@
-﻿  main.cpp
+﻿  Hash_Table.cpp
+C:\Users\ivanr\OneDrive\Рабочий стол\Учебники и задачники в унике\2курс\АСД\Лабораторные\Lab5\Hash_Table.cpp(169,16): warning C4244: инициализация: преобразование "int" в "float", возможна потеря данных
+C:\Users\ivanr\OneDrive\Рабочий стол\Учебники и задачники в унике\2курс\АСД\Лабораторные\Lab5\Hash_Table.cpp(170,15): warning C4305: инициализация: усечение из "double" в "float"
+C:\Users\ivanr\OneDrive\Рабочий стол\Учебники и задачники в унике\2курс\АСД\Лабораторные\Lab5\Hash_Table.cpp(176,9): warning C4244: return: преобразование "float" в "unsigned long", возможна потеря данных
   Lab5.vcxproj -> C:\Users\ivanr\OneDrive\Рабочий стол\Учебники и задачники в унике\2курс\АСД\Лабораторные\Lab5\x64\Debug\Lab5.exe
