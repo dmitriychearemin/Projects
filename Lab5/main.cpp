@@ -35,7 +35,8 @@ int main() {
 			break;
 
 		case 3:
-			
+			std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+			Table->Search_Need_Element();
 			break;
 
 		case 4:
@@ -43,7 +44,8 @@ int main() {
 			break;
 
 		case 5:
-
+			std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+			Table->Delete_Need_Element();
 			break;
 
 		case 0:

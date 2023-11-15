@@ -49,10 +49,45 @@ void Hash_Table::Delete_Need_Element() {
 	std::cout << "¬ведите название компании, которую хотите удалить из таблицы: ";
 	Name = Enter_Data(Name);
 
-	//Name = search element
+	int index = Hash_Function_Multiply(Name, Main_H_Table);
 
-	//Delete_Item(item);
+	if (Main_H_Table->items[index] != nullptr) {
+		if (strcmp(Main_H_Table->items[index]->key_Name, Name) == 0) {
+			Delete_Item(Main_H_Table->items[index]);
+			Main_H_Table->items[index] = Main_H_Table->items[index]->next_item;
+		}
+		else {
+			Main_H_Table->items[index] = Transfer_Pointer(Main_H_Table->items[index], Name);
+		}
+	}
 
+	else {
+		std::cout << "Ёта компани€ ещЄ не находитьс€ в таблице: " << std::endl;
+	}
+	
+	Searching = 0;
+}
+
+void Hash_Table::Search_Need_Element() {
+	char* Name = nullptr;
+	int index=0;
+	setlocale(LC_ALL, "Russian");
+
+	std::cout << "¬ведите название компании которую хотите найти в таблице: " << std::endl;
+	Name = Enter_Data(Name);
+
+	Hash_Item* item;
+
+	item = HT_search(Main_H_Table, Name);
+	if (item != nullptr) {
+		index = Hash_Function_Multiply(item->key_Name, Main_H_Table);
+		std::cout << index << " : " << item->Name_Company << " " << item->Country << " " << item->City << " " << item->Street << " " << item->N_Home << std::endl;
+	}
+	else {
+		std::cout << "Ёта компании ещЄ не находитьс€ в таблице: " << std::endl;
+	}
+
+	
 }
 
 Hash_Table::Hash_Item* Hash_Table::Add_Hash_Item(char* key, char* Country, char* City, char* Street, char* N_Home) {
@@ -83,8 +118,9 @@ Hash_Table::hash_table* Hash_Table::Create_Hash_Table(int size, hash_table* tabl
 	table = new hash_table;
 	table->Size = size;
 	table->Count_Items = 0;
-	table->items = new Hash_Item* [size];
+	table->items = new Hash_Item * [size];
 	for (int i = 0; i < table->Size; i++) {
+		table->items[i] = new Hash_Item;
 		table->items[i] = nullptr;
 	}
 		
@@ -106,33 +142,39 @@ void Hash_Table::Insert_Item_In_Table(hash_table* table, char* key, char* Countr
 	int index = Hash_Function_Multiply(item->key_Name,Main_H_Table);
 	Hash_Item* current_item;
 	current_item= table->items[index];
-	 
-	if (current_item == nullptr) {
-		current_item = item;
-		table->Count_Items++;
-	}
+	
+	
+	table->items[index] = Add_Element_In_List(table->items[index], item);
+	//std::cout << table->items[index] << " ";
+	table->Count_Items++;
 
-	else {						//коллизии
-		std::cout << current_item->next_item << " " << table->items[index]->next_item << std::endl;
-		while (current_item != nullptr) {
-			current_item = current_item->next_item;
-
-		}
-
-
-
-		current_item = item;
-		table->Count_Items++;
-	}
 }
 	
+Hash_Table::Hash_Item*  Hash_Table::HT_search(hash_table* table, char* key) {
+	
+	int index = Hash_Function_Multiply(key,table);
+
+	Hash_Item* item = table->items[index];
+
+	// Ensure that we move to a non NULL item
+	if (item != nullptr) {
+		while (item != nullptr) {
+			if (strcmp(item->key_Name, key) == 0) {
+				return item;
+			}
+			item = item->next_item;
+		}
+		
+	}
+	return nullptr;
+}
 
 void Hash_Table::Show_Hash_Table(hash_table* table) {
-	//system("cls");
+	system("cls");
 	Hash_Item* current_item = nullptr;
 	for (int i = 0; i < table->Size; i++) {
-		if (table->items[i] != nullptr) {
-			current_item = table->items[i];
+		current_item = table->items[i];
+		if (current_item != nullptr) {
 			while (current_item != nullptr) {
 				std::cout << i << " : " << current_item->Name_Company << " " << current_item->Country << " " << current_item->City << " " << current_item->Street << " " << current_item->N_Home << std::endl;
 				current_item = current_item->next_item;
@@ -140,6 +182,18 @@ void Hash_Table::Show_Hash_Table(hash_table* table) {
 		}
 	}
 }
+
+Hash_Table::Hash_Item* Hash_Table::Add_Element_In_List(Hash_Item* table_item, Hash_Item* item) {
+	if (table_item == nullptr) {
+		table_item = item;
+		//std::cout<< table_item <<" " << item <<" ";
+	}
+	else {
+		table_item->next_item = Add_Element_In_List(table_item->next_item, item);
+	}
+	return table_item;
+}
+
 void Hash_Table::Transfer_Table1_To_Table2(hash_table* table_main, hash_table* table_dop) {
 
 	for (int i = 0; i < table_main->Size; i++) {
@@ -150,10 +204,28 @@ void Hash_Table::Transfer_Table1_To_Table2(hash_table* table_main, hash_table* t
 
 void Hash_Table::Delete_Item(Hash_Item* item){
 	free(item->key_Name);
+	free(item->Name_Company);
 	free(item->City);
 	free(item->Country);
 	free(item->N_Home);
 	free(item->Street);
+	//free item;
+}
+
+Hash_Table::Hash_Item* Hash_Table::Transfer_Pointer(Hash_Item* table_item, char* key) {
+
+	if (table_item != nullptr && Searching==0) {
+		if (table_item->next_item != nullptr) {
+			if (strcmp(table_item->next_item->key_Name, key) == 0) {
+				Delete_Item(table_item->next_item);
+				Searching = 1;
+				table_item->next_item = Transfer_Pointer(table_item->next_item->next_item, key);
+			}
+		}
+		
+		table_item->next_item = Transfer_Pointer(table_item->next_item, key);
+	}
+	return table_item;
 }
 
 void Hash_Table::Delete_Hash_Table(hash_table* table){
