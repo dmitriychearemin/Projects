@@ -2,29 +2,29 @@
 #include "Hash_Table.h"
 #include <iostream>
 #include <string>
-
+#include <fstream>
 
 void Hash_Table::Add_Element_Hand() {
 
 	char* Name= nullptr, *Country=nullptr, *Street=nullptr, *City=nullptr, *N_Home=nullptr;
-	setlocale(LC_ALL, "Russian");
+	
 
-	std::cout << "¬ведите название компании: " << std::endl;
+	std::cout << "Enter name company: " << std::endl;
 	Name = Enter_Data(Name);
 
-	std::cout << "¬ведите страну где находитьс€ главный офис этой компании:   " << std::endl;
+	std::cout << "Enter country:   " << std::endl;
 	Country = Enter_Data(Country);
 
-	std::cout << "¬ведите город где находитьс€ главный офис этой компании:   " << std::endl;
+	std::cout << "Enter city:   " << std::endl;
 	City =  Enter_Data(City);
 
-	std::cout << "¬ведите улицу где находитьс€ главный офис этой компании:  " << std::endl;
+	std::cout << "Enter street:  " << std::endl;
 	Street =  Enter_Data(Street);
 
-	std::cout << "¬ведите дом в котором находитьс€ главный офис этой компании:  " << std::endl;
+	std::cout << "Enter number home:  " << std::endl;
 	N_Home=  Enter_Data(N_Home);
 
-	Insert_Item_In_Table(Main_H_Table, Name, Country, City, Street, N_Home);
+	Insert_Item_In_Table(Tables[0], Name, Country, City, Street, N_Home);
 }
 
 char* Hash_Table::Enter_Data(char* word) {
@@ -46,23 +46,23 @@ void Hash_Table::Delete_Need_Element() {
 
 	char* Name=nullptr;
 	
-	std::cout << "¬ведите название компании, которую хотите удалить из таблицы: ";
+	std::cout << "Enter company: ";
 	Name = Enter_Data(Name);
 
-	int index = Hash_Function_Multiply(Name, Main_H_Table);
+	int index = Hash_Function_Multiply(Name, Tables[0]);
 
-	if (Main_H_Table->items[index] != nullptr) {
-		if (strcmp(Main_H_Table->items[index]->key_Name, Name) == 0) {
-			Delete_Item(Main_H_Table->items[index]);
-			Main_H_Table->items[index] = Main_H_Table->items[index]->next_item;
+	if (Tables[0]->items[index] != nullptr) {
+		if (strcmp(Tables[0]->items[index]->key_Name, Name) == 0) {
+			Delete_Item(Tables[0]->items[index]);
+			Tables[0]->items[index] = Tables[0]->items[index]->next_item;
 		}
 		else {
-			Main_H_Table->items[index] = Transfer_Pointer(Main_H_Table->items[index], Name);
+			Tables[0]->items[index] = Transfer_Pointer(Tables[0]->items[index], Name);
 		}
 	}
 
 	else {
-		std::cout << "Ёта компани€ ещЄ не находитьс€ в таблице: " << std::endl;
+		std::cout << "Table has not rhis company: " << std::endl;
 	}
 	
 	Searching = 0;
@@ -71,20 +71,20 @@ void Hash_Table::Delete_Need_Element() {
 void Hash_Table::Search_Need_Element() {
 	char* Name = nullptr;
 	int index=0;
-	setlocale(LC_ALL, "Russian");
+	//setlocale(LC_ALL, "Russian");
 
-	std::cout << "¬ведите название компании которую хотите найти в таблице: " << std::endl;
+	std::cout << "Enter company to search: " << std::endl;
 	Name = Enter_Data(Name);
 
 	Hash_Item* item;
 
-	item = HT_search(Main_H_Table, Name);
+	item = HT_search(Tables[0], Name);
 	if (item != nullptr) {
-		index = Hash_Function_Multiply(item->key_Name, Main_H_Table);
+		index = Hash_Function_Multiply(item->key_Name, Tables[0]);
 		std::cout << index << " : " << item->Name_Company << " " << item->Country << " " << item->City << " " << item->Street << " " << item->N_Home << std::endl;
 	}
 	else {
-		std::cout << "Ёта компании ещЄ не находитьс€ в таблице: " << std::endl;
+		std::cout << "Table have not this company: " << std::endl;
 	}
 
 	
@@ -130,19 +130,25 @@ Hash_Table::hash_table* Hash_Table::Create_Hash_Table(int size, hash_table* tabl
 void Hash_Table::Insert_Item_In_Table(hash_table* table, char* key, char* Country, char* City, char* Street, char* N_Home){
 	
 	
-	if (Checking_Fullness(Main_H_Table)==true) {
-		Create_Hash_Table(Main_H_Table->Size * 2, Dop_H_Table);
+	if (Checking_Fullness(table) == true && convert == 0) {
+		convert = 1;
+		
+		table->Size = table->Size * 2;								 // увеличиваем таблицу и выдел€ем пам€ть						
+		table->items = (Hash_Item**)realloc(table->items, sizeof(Hash_Item*)* table->Size);
+		
+		for (int i = table->Size/2; i < table->Size; i++) {
+			table->items[i] = new Hash_Item;
+			table->items[i] = nullptr;
+		}
 
-
-		//  переброс из одной таблицы в другую
+		//Show_Hash_Table(table);
+		convert = 0;
+		
 	}
 
 	Hash_Item* item =  Add_Hash_Item(key, Country, City, Street, N_Home);
 	 
-	int index = Hash_Function_Multiply(item->key_Name,Main_H_Table);
-	Hash_Item* current_item;
-	current_item= table->items[index];
-	
+	int index = Hash_Function_Multiply(item->key_Name,table);
 	
 	table->items[index] = Add_Element_In_List(table->items[index], item);
 	//std::cout << table->items[index] << " ";
@@ -167,6 +173,21 @@ Hash_Table::Hash_Item*  Hash_Table::HT_search(hash_table* table, char* key) {
 		
 	}
 	return nullptr;
+}
+
+void Hash_Table::Rehashing(hash_table* table) {
+	Hash_Item* current_item = nullptr;
+
+	for (int i = 0; i < table->Size; i++) {
+		current_item = table->items[i];
+		if (current_item != nullptr) {
+			while (current_item != nullptr) {
+				Insert_Item_In_Table(table, current_item->key_Name, current_item->Country, current_item->City, current_item->Street, current_item->N_Home);
+				current_item = current_item->next_item;
+			}
+		}
+	}
+
 }
 
 void Hash_Table::Show_Hash_Table(hash_table* table) {
@@ -194,10 +215,17 @@ Hash_Table::Hash_Item* Hash_Table::Add_Element_In_List(Hash_Item* table_item, Ha
 	return table_item;
 }
 
-void Hash_Table::Transfer_Table1_To_Table2(hash_table* table_main, hash_table* table_dop) {
+void Hash_Table::Transfer_Table1_To_Table2(hash_table* table1_main, hash_table* table2_dop) {
+	Hash_Item* current_item = nullptr;
 
-	for (int i = 0; i < table_main->Size; i++) {
-		table_main->items[i];
+	for (int i = 0; i < table1_main ->Size; i++) {
+		current_item = table1_main -> items[i];
+		if (current_item != nullptr) {
+			while (current_item != nullptr) {
+				Insert_Item_In_Table(table2_dop, current_item->key_Name, current_item->Country, current_item->City, current_item->Street, current_item->N_Home);
+				current_item = current_item->next_item;
+			}
+		}
 	}
 
 }
@@ -274,11 +302,99 @@ float Hash_Table::Remainder_Division(float a1, float b1) {
 
 bool Hash_Table::Checking_Fullness(hash_table* table) {
 
-	if ((table->Count_Items / table->Size) * 100 >= 70) {
+	float a = Remainder_Division(table->Count_Items ,table->Size) * 100;
+	if (a >= 70) {
+		
 		return true;
 	}
 	else {
 		return false;
+	}
+
+}
+
+void Hash_Table::Read_Table_In_File() {
+	char* Name=nullptr, *Country = nullptr, * Street = nullptr, * City = nullptr, * N_Home = nullptr;
+	std::ifstream File;
+	std::string str;
+	File.open("Hash_Table.txt");
+	int opredelitel = 0;
+	if (File) {
+		while (!File.eof()) {
+
+			str = " ";
+			File >> str;
+			if (opredelitel == 0) {
+				int size = 1;
+				Name = (char*)malloc(sizeof(char));
+				while (str[size-1]) {
+					Name[size - 1] = str[size-1];
+					size++;
+					Name = (char*)realloc(Name, size);
+				}
+				opredelitel = 1;
+			}
+
+			str = " ";
+			File >> str;
+			if (opredelitel == 1) {
+				int size = 1;
+				Country = (char*)malloc(sizeof(char));
+				while (str[size - 1]) {
+					Country[size - 1] = str[size - 1];
+					size++;
+					Country = (char*)realloc(Country, size);
+				}
+				opredelitel = 2;
+			}
+
+			str = " ";
+			File >> str;
+			if (opredelitel == 2) {
+				int size = 1;
+				City = (char*)malloc(sizeof(char));
+				while (str[size - 1]) {
+					City[size - 1] = str[size - 1];
+					size++;
+					City = (char*)realloc(City, size);
+				}
+				opredelitel = 3;
+			}
+
+			str = " ";
+			File >> str;
+			if (opredelitel == 3) {
+				int size = 1;
+				Street = (char*)malloc(sizeof(char));
+				while (str[size - 1]) {
+					Street[size - 1] = str[size - 1];
+					size++;
+					Street = (char*)realloc(Street, size);
+				}
+				opredelitel = 4;
+			}
+
+			str = " ";
+			File >> str;
+			if (opredelitel == 4) {
+				int size = 1;
+				N_Home = (char*)malloc(sizeof(char));
+				while (str[size - 1]) {
+					N_Home[size - 1] = str[size - 1];
+					size++;
+					N_Home = (char*)realloc(N_Home, size);
+				}
+				opredelitel = 0;
+			}
+			
+			std::cout << Name << " " << Country << " " << City << " " << Street << " " << N_Home << std::endl;
+			Insert_Item_In_Table(Tables[0], Name, Country, Street, City, N_Home);
+			delete Name, Country, Street, City, N_Home;
+		}
+		File.close();
+	}
+	else {
+		std::cout << "File not exist" << std::endl;
 	}
 
 }

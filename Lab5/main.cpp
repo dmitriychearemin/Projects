@@ -9,7 +9,8 @@
 int main() {
 	int opredelitel;
 	Hash_Table* Table = new Hash_Table;
-	Table->Main_H_Table = Table->Create_Hash_Table(5, Table->Main_H_Table);
+	
+	Table->Tables[0] = Table->Create_Hash_Table(5, Table->Tables[0]);
 	while (true) {
 
 		std::cout << std::endl;
@@ -31,7 +32,7 @@ int main() {
 			break;
 
 		case 2:
-			
+			Table->Read_Table_In_File();
 			break;
 
 		case 3:
@@ -40,7 +41,7 @@ int main() {
 			break;
 
 		case 4:
-			Table->Show_Hash_Table(Table->Main_H_Table);
+			Table->Show_Hash_Table(Table->Tables[0]);
 			break;
 
 		case 5:

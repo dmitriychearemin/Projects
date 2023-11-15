@@ -1,0 +1,8 @@
+Xiaomi China Pekin dfds 34 
+Huawey China Pekin dghs 10 
+Apple USA California Black 8 
+GAZ Russia NN Autozavod 67 
+Philips SSS City1 Brown_Street 9  
+Samsung Corean City2 VVVstreet 7 
+Company3 Country3 City3 Street3 12
+ 

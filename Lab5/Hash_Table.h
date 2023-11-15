@@ -37,11 +37,17 @@ public:
 	};
 
 	Hash_Item* H_Item;
-	hash_table* Main_H_Table;
-	hash_table* Dop_H_Table;
+	hash_table** Tables;
+	
 	int Searching = 0;
+	int convert = 0;
 
 public:
+	Hash_Table() {
+		Tables = new hash_table* [2];
+		Tables[0] = new hash_table;
+		Tables[1] = new hash_table;
+	}
 
 	Hash_Item* Add_Hash_Item(char* key, char* Country, char* City, char* Street, char* N_Home);
 	hash_table* Create_Hash_Table(int size, hash_table*);
@@ -61,4 +67,8 @@ public:
 	void Search_Need_Element();
 	Hash_Item* Transfer_Pointer(Hash_Item* , char* );
 	void Transfer_Table1_To_Table2(hash_table* table1, hash_table* table2);
+	void Rehashing(hash_table*);
+	void Read_Table_In_File();
+	//char* Convert_String_To_Char(std::string* str);
+
 };
