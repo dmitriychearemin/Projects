@@ -1,7 +1,7 @@
 ﻿  Hash_Table.cpp
-C:\Users\ivanr\OneDrive\Рабочий стол\Учебники и задачники в унике\2курс\АСД\Лабораторные\Lab5\Hash_Table.cpp(315,16): warning C4244: инициализация: преобразование "int" в "float", возможна потеря данных
-C:\Users\ivanr\OneDrive\Рабочий стол\Учебники и задачники в унике\2курс\АСД\Лабораторные\Lab5\Hash_Table.cpp(316,15): warning C4305: инициализация: усечение из "double" в "float"
-C:\Users\ivanr\OneDrive\Рабочий стол\Учебники и задачники в унике\2курс\АСД\Лабораторные\Lab5\Hash_Table.cpp(322,9): warning C4244: return: преобразование "float" в "unsigned long", возможна потеря данных
-C:\Users\ivanr\OneDrive\Рабочий стол\Учебники и задачники в унике\2курс\АСД\Лабораторные\Lab5\Hash_Table.cpp(344,56): warning C4244: аргумент: преобразование "int" в "float", возможна потеря данных
-C:\Users\ivanr\OneDrive\Рабочий стол\Учебники и задачники в унике\2курс\АСД\Лабораторные\Lab5\Hash_Table.cpp(344,36): warning C4244: аргумент: преобразование "int" в "float", возможна потеря данных
+C:\Users\ivanr\OneDrive\Рабочий стол\Учебники и задачники в унике\2курс\АСД\Лабораторные\Lab5\Hash_Table.cpp(353,16): warning C4244: инициализация: преобразование "int" в "float", возможна потеря данных
+C:\Users\ivanr\OneDrive\Рабочий стол\Учебники и задачники в унике\2курс\АСД\Лабораторные\Lab5\Hash_Table.cpp(354,15): warning C4305: инициализация: усечение из "double" в "float"
+C:\Users\ivanr\OneDrive\Рабочий стол\Учебники и задачники в унике\2курс\АСД\Лабораторные\Lab5\Hash_Table.cpp(360,9): warning C4244: return: преобразование "float" в "unsigned long", возможна потеря данных
+C:\Users\ivanr\OneDrive\Рабочий стол\Учебники и задачники в унике\2курс\АСД\Лабораторные\Lab5\Hash_Table.cpp(382,56): warning C4244: аргумент: преобразование "int" в "float", возможна потеря данных
+C:\Users\ivanr\OneDrive\Рабочий стол\Учебники и задачники в унике\2курс\АСД\Лабораторные\Lab5\Hash_Table.cpp(382,36): warning C4244: аргумент: преобразование "int" в "float", возможна потеря данных
   Lab5.vcxproj -> C:\Users\ivanr\OneDrive\Рабочий стол\Учебники и задачники в унике\2курс\АСД\Лабораторные\Lab5\x64\Debug\Lab5.exe

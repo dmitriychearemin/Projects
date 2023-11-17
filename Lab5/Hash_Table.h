@@ -72,6 +72,7 @@ public:
 	Hash_Item* HT_search(hash_table* table, std::string);
 	void Show_Hash_Table(hash_table* table);
 	void Search_Need_Element();
+	void Convert_TABLE1_To_TABLE2(hash_table* table1, hash_table* table2);
 	void Transfer_Pointer(List_Item* , std::string);
 	void Transfer_Table1_To_Table2(hash_table* table1, hash_table* table2);
 	void Rehashing(hash_table*);

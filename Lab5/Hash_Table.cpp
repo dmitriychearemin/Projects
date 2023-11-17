@@ -132,9 +132,19 @@ void Hash_Table::Insert_Item_In_Table(hash_table* table, std::string key, std::s
 			table->Lists[i]->next_list = nullptr;
 			Koef++;
 		}
-		//Rehashing(table);
-		//Show_Hash_Table(table);
+		Rehashing(table);
 		convert = 0;
+		//Show_Hash_Table(table);
+		
+		/*Tables[1] = Create_Hash_Table((table->Size * 2), Tables[1]);
+		Convert_TABLE1_To_TABLE2(table, Tables[1]);
+		std::cout << "1Convert";
+		Delete_Hash_Table(table);
+		table = Create_Hash_Table(Tables[1]->Size, table);
+		Convert_TABLE1_To_TABLE2(Tables[1], table);
+		std::cout << "2Convert";
+		Delete_Hash_Table(Tables[1]);
+		*/
 	}
 
 	Hash_Item* item =  Add_Hash_Item(key, Country, City, Street, N_Home);
@@ -169,17 +179,28 @@ Hash_Table::Hash_Item*  Hash_Table::HT_search(hash_table* table, std::string key
 
 void Hash_Table::Rehashing(hash_table* table) {
 	List_Item* cur_List = nullptr;
-	for (int i = 0; i < table->Size; i++) {
+	for (int i = 0; i < table->Size/2; i++) {
 		cur_List = table->Lists[i];
 		while (cur_List != NULL && cur_List->item != NULL) {
 			int index = Hash_Function_Multiply(cur_List->item->key_Name, table);
-			Hash_Item* item = cur_List->item;
-			List_Item* new_list = table->Lists[index];
-			Add_Element_In_List(new_list, item);
-			cur_List = cur_List->next_list;
+			if (i != index) {
+				Hash_Item* item = cur_List->item;
+				//List_Item* new_list = table->Lists[index];
+				Add_Element_In_List(table->Lists[index], item);
+				std::cout << " count" << std::endl;
+				if (cur_List->item->key_Name == table->Lists[i]->item->key_Name) {
+					table->Lists[i] = table->Lists[i]->next_list;
+				}
+				else {
+					Transfer_Pointer(table->Lists[i], cur_List->item->key_Name);
+				}
+			}
+			if (cur_List->next_list) {
+				cur_List = cur_List->next_list;
+			}
+			
 
 		}
-		table->Lists[i] = Delete_List(table->Lists[i]);
 	}
 	/*for (int i = 0; i < table->Size; i++) {
 		while (table->Lists[i] != NULL && table->Lists[i]->item != NULL) {
@@ -213,7 +234,8 @@ Hash_Table::List_Item* Hash_Table::Delete_List(List_Item* head_list) {
 	List_Item* next = nullptr;
 	while (head_list) {
 		next = head_list->next_list;
-		Delete_Item(head_list->item);
+		//Delete_Item(head_list->item);
+		delete head_list->item;
 		delete head_list;
 		head_list = next;
 	}
@@ -232,6 +254,22 @@ void Hash_Table::Show_Hash_Table(hash_table* table) {
 			cur_List = cur_List->next_list;
 		}
 	}
+
+	std::cout << "Size tabble = " << table->Size << std::endl;
+	std::cout << "Count items = " << table->Count_Items << std::endl;
+}
+
+void Hash_Table::Convert_TABLE1_To_TABLE2(hash_table* table1, hash_table* table2) {
+
+	List_Item* cur_List = nullptr;
+	for (int i = 0; i < table1->Size; i++) {
+		cur_List = table1->Lists[i];
+		while (cur_List != NULL && cur_List->item != NULL) {
+			Insert_Item_In_Table(table2, cur_List->item->key_Name, cur_List->item->Country, cur_List->item->City, cur_List->item->Street, cur_List->item->N_Home);
+			cur_List = cur_List->next_list;
+		}
+	}
+
 }
 
 void Hash_Table::Add_Element_In_List(List_Item* table_list, Hash_Item* item) {
@@ -298,13 +336,13 @@ void Hash_Table::Transfer_Pointer(List_Item* head, std::string key) {
 void Hash_Table::Delete_Hash_Table(hash_table* table){
 
 	for (int i = 0; i < table->Size; i++) {
-		Hash_Item* item = table->Lists[i]->item;
-		if (item != NULL)
-			Delete_Item(item);
+		Delete_List(table->Lists[i]);
+		
 	}
-
-	free(table->Lists);
-	free(table);
+	table->Count_Items = 0;
+	table->Size = 0;
+	delete(table->Lists);
+	delete(table);
 
 }
 
@@ -366,7 +404,6 @@ void Hash_Table::Read_Table_In_File() {
 			File >> City;
 			File >> N_Home;
 			
-			std::cout << Name << std::endl;
 			Insert_Item_In_Table(Tables[0], Name, Country, City, Street, N_Home);
 			
 		}
