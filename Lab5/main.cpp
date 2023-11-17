@@ -10,7 +10,7 @@ int main() {
 	int opredelitel;
 	Hash_Table* Table = new Hash_Table;
 	
-	Table->Tables[0] = Table->Create_Hash_Table(5, Table->Tables[0]);
+	Table->Tables[0] = Table->Create_Hash_Table(15, Table->Tables[0]);
 	while (true) {
 
 		std::cout << std::endl;
